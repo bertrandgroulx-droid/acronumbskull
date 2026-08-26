@@ -1,8 +1,10 @@
 name: Deploy to GitHub Pages
 
+# Pages for this repo is served straight from the `main` branch (Settings → Pages →
+# Source → Deploy from a branch), so this workflow does not run on push — it would
+# fail on every commit for want of an Actions-source Pages site. Switch the source to
+# GitHub Actions and put the push trigger back to hand deploys to this workflow.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:

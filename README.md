@@ -67,11 +67,19 @@ python3 -m http.server 8000
 
 ## Deploy on GitHub Pages
 
-This repo ships `.github/workflows/pages.yml`, which publishes the site on every push
-to `main`. One-time setup: **Settings → Pages → Build and deployment → Source →
-GitHub Actions**. The workflow tries to enable Pages itself and cannot — an automated
-token is not allowed to — so the first run fails until a human clicks it. The site
-then lives at `https://<your-username>.github.io/acronumbskull/`.
+The site is static and lives at the root of the repo, so the simplest route is the one
+this repo uses: **Settings → Pages → Build and deployment → Source → Deploy from a
+branch**, branch `main`, folder `/ (root)`. GitHub builds it on every push to `main`,
+with no workflow involved, and serves it at
+`https://<your-username>.github.io/acronumbskull/`.
+
+`.github/workflows/pages.yml` is the other route, for anyone who wants the deploy to
+run as an Action. Switching **Source → GitHub Actions** and changing the workflow's
+trigger back to `push: branches: [main]` is all it takes — it is set to
+`workflow_dispatch` only here so that it does not fail on every push while the branch
+source is doing the work. Note that the workflow cannot enable Pages for you: it asks
+GitHub to create the site (`enablement: true`) and an automated token is not permitted
+to, so the source has to be set by hand first either way.
 
 ## Tests and audits
 
