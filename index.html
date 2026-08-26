@@ -147,27 +147,6 @@
   }
   .entry-meta { display: flex; align-items: center; justify-content: center; gap: 10px; }
 
-  .speak {
-    flex: none;
-    width: 38px;
-    height: 38px;
-    min-height: 0;
-    padding: 0;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    color: var(--muted);
-    border: 1.5px solid var(--rule);
-  }
-  .speak svg { width: 19px; height: 19px; display: block; }
-  .speak:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
-  .speak.speaking { color: var(--accent); border-color: var(--accent); animation: sound 1.1s ease-in-out infinite; }
-  .speak[hidden] { display: none; }
-  @keyframes sound {
-    0%, 100% { box-shadow: 0 0 0 0 var(--accent-soft); }
-    50% { box-shadow: 0 0 0 7px var(--accent-soft); }
-  }
-
   .def {
     font-size: 1.25rem;
     line-height: 1.5;
@@ -357,25 +336,6 @@
   @media (prefers-color-scheme: dark) { .levels button[aria-pressed="true"] { color: #0e1016; } }
   .level-note { margin: -8px 0 0; text-align: center; font-size: 0.9rem; color: var(--muted); }
 
-  .voices { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .voices-label, .voices-hint { font-size: 0.8rem; color: var(--muted); }
-  .voices-label { font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
-  .voice-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
-  .chip {
-    min-height: 40px;
-    padding: 8px 10px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    border-radius: 999px;
-  }
-  .chip[aria-pressed="true"] {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #ffffff;
-  }
-  @media (prefers-color-scheme: dark) { .chip[aria-pressed="true"] { color: #0e1016; } }
-  .chip.playing { animation: sound 1.1s ease-in-out infinite; }
-
   .rules { margin: 0; padding-left: 1.2em; color: var(--ink-soft); display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; }
   .rules li::marker { color: var(--accent); font-weight: 700; }
   .rules strong { color: var(--ink); font-weight: 700; }
@@ -409,17 +369,6 @@
     </div>
     <p class="level-note" id="level-note"></p>
 
-    <div class="voices" id="voices">
-      <span class="voices-label">Voice</span>
-      <div class="voice-chips" role="group" aria-label="Reading voice">
-        <button class="chip" id="voice-emma" data-voice="emma">Emma</button>
-        <button class="chip" id="voice-isabella" data-voice="isabella">Isabella</button>
-        <button class="chip" id="voice-alice" data-voice="alice">Alice</button>
-        <button class="chip" id="voice-lily" data-voice="lily">Lily</button>
-      </div>
-      <span class="voices-hint">Tap to hear an acronym</span>
-    </div>
-
     <button id="btn-start" class="primary">Deal me ten</button>
     <div id="best-line" class="best"></div>
   </section>
@@ -438,13 +387,6 @@
       <h2 class="headword" id="acronym"></h2>
       <div class="entry-meta">
         <span class="field" id="field"></span>
-        <button class="speak" id="btn-speak" type="button" aria-label="Hear the acronym spoken" title="Hear the acronym spoken">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M4 9.5v5h3.4L12 18.5v-13L7.4 9.5H4z" fill="currentColor" />
-            <path d="M15.8 8.8a4.6 4.6 0 0 1 0 6.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-            <path d="M18.6 6.2a8.4 8.4 0 0 1 0 11.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-          </svg>
-        </button>
       </div>
       <p class="def" id="def"></p>
     </div>
@@ -454,7 +396,7 @@
         <button class="yes" id="btn-real">Real</button>
         <button class="no" id="btn-fake">Fake</button>
       </div>
-      <p class="keys" style="margin:12px 0 0"><kbd>&larr;</kbd> real &nbsp;&middot;&nbsp; <kbd>&rarr;</kbd> fake &nbsp;&middot;&nbsp; <kbd>S</kbd> hear it</p>
+      <p class="keys" style="margin:12px 0 0"><kbd>&larr;</kbd> real &nbsp;&middot;&nbsp; <kbd>&rarr;</kbd> fake</p>
     </div>
 
     <div class="verdict hidden" id="verdict" role="status" aria-live="polite">
@@ -503,7 +445,6 @@
   var STORE_BESTS = "acronumbskull.bests";        // { level: score }
   var STORE_BEST_LEGACY = "acronumbskull.best";   // a single score, from before levels existed
   var STORE_LEVEL = "acronumbskull.level";
-  var STORE_VOICE = "acronumbskull.voice";
   var STORE_SEEN = "acronumbskull.seen";
 
   var LEVELS = {
@@ -519,7 +460,7 @@
   var view = 0;       // which acronym is on screen (trails `index` while reviewing)
   var score = 0;
   var answered = false;   // has the acronym currently on screen been answered?
-  var log = [];       // { w, say, real, guess, correct }
+  var log = [];       // { w, real, guess, correct }
 
   /* ---------- storage (a blocked localStorage must never break the game) ---------- */
   function read(key, fallback) {
@@ -558,7 +499,7 @@
 
   function tag(entry, isReal) {
     // `ex` is only present on real acronyms — that is what gates the example sentence.
-    return { w: entry.w, say: entry.say, cat: entry.cat, def: entry.def, note: entry.note, ex: entry.ex, real: isReal };
+    return { w: entry.w, cat: entry.cat, def: entry.def, note: entry.note, ex: entry.ex, real: isReal };
   }
 
   // Every card flips its own coin, so the real/fake count is genuinely random —
@@ -583,138 +524,6 @@
     var picked = shuffle(reals.concat(fakes));
     write(STORE_SEEN, seen.concat(picked.map(function (x) { return x.w; })));
     return picked;
-  }
-
-  /* ---------- saying the acronym out loud ---------- */
-  // The game ships its own recordings: device speech synthesis sounds robotic on
-  // most phones, and iOS ships compact voices by default. Files are rendered by
-  // tools/make-audio.py. Synthesis stays on as a fallback for anything missing.
-  var AUDIO_DIR = "audio/";
-  var VOICE_NAMES = ["emma", "isabella", "alice", "lily"];
-  var SAMPLE_ACRONYM = "scuba";          // what a voice chip says when you tap it
-  var canPlayFiles = (typeof Audio === "function");
-  var voiceName = "emma";
-  var clip = null;
-  var sample = null;
-  // Voice lists differ wildly by device, so aim for en-GB and work down a list of
-  // the good British voices that actually ship on common platforms.
-  var speech = window.speechSynthesis || null;
-  var voice = null;
-  // British and female where the device has one. Voices carry no gender field, so
-  // this goes by the names the major platforms actually ship.
-  var FEMALE_BRITISH = [
-    "Google UK English Female",                                  // Android, Chrome
-    "Serena", "Kate", "Stephanie", "Martha", "Jamie",             // Apple en-GB
-    "Sonia", "Libby", "Hazel", "Susan", "Maisie", "Abbi", "Bella" // Microsoft en-GB
-  ];
-  var MALE_NAMES = /daniel|oliver|arthur|ryan|thomas|george|malcolm|male|alex|fred|gordon/i;
-
-  function pickVoice() {
-    if (!speech || !speech.getVoices) return null;
-    var voices = speech.getVoices() || [];
-    var british = voices.filter(function (v) { return /^en[-_]GB/i.test(v.lang || ""); });
-
-    for (var i = 0; i < FEMALE_BRITISH.length; i++) {
-      var named = british.filter(function (v) { return v.name.indexOf(FEMALE_BRITISH[i]) !== -1; })[0];
-      if (named) return named;
-    }
-    // No name we recognise: take a British voice that isn't obviously male…
-    var unnamed = british.filter(function (v) { return !MALE_NAMES.test(v.name); })[0];
-    if (unnamed) return unnamed;
-    // …then any British voice, and failing that leave it unset so the device
-    // falls back to whichever voice the owner has chosen in their settings.
-    return british[0] || null;
-  }
-
-  function markSpeaking(on) {
-    el("btn-speak").classList.toggle("speaking", on);
-  }
-
-  // Load (but don't play) the clip for the acronym on screen, so the first tap
-  // is instant. The file is named for the acronym itself; `say` is only for the
-  // synthesised fallback, which needs the letters spaced out to read them.
-  function loadClip(name) {
-    if (!canPlayFiles) return null;
-    var a = new Audio(AUDIO_DIR + voiceName + "/" + name + ".mp3");
-    a.preload = "auto";
-    return a;
-  }
-
-  // Choosing a voice plays an acronym in it, which is the only way to choose sensibly.
-  function setVoice(name, speak) {
-    voiceName = VOICE_NAMES.indexOf(name) === -1 ? "emma" : name;
-    write(STORE_VOICE, voiceName);
-    VOICE_NAMES.forEach(function (v) {
-      var chip = el("voice-" + v);
-      chip.setAttribute("aria-pressed", v === voiceName ? "true" : "false");
-      chip.classList.remove("playing");
-    });
-    if (deck.length) clip = loadClip(deck[view].w);   // mid-game changes take effect at once
-    if (!speak || !canPlayFiles) return;
-
-    if (sample) { try { sample.pause(); } catch (e) { /* nothing playing */ } }
-    var chip = el("voice-" + voiceName);
-    sample = new Audio(AUDIO_DIR + voiceName + "/" + SAMPLE_ACRONYM + ".mp3");
-    chip.classList.add("playing");
-    var done = function () { chip.classList.remove("playing"); };
-    sample.onended = sample.onerror = done;
-    var playing = sample.play();
-    if (playing && playing.catch) playing.catch(done);
-  }
-
-  // Play one on demand — used by the recap, where nothing is preloaded.
-  function playClip(name, spoken, btn) {
-    var lit = function (on) { if (btn) btn.classList.toggle("speaking", on); };
-    var fallback = function () { lit(false); speakSynthesised(spoken); };
-    if (!canPlayFiles) { fallback(); return; }
-    var a = new Audio(AUDIO_DIR + voiceName + "/" + name + ".mp3");
-    a.onended = function () { lit(false); };
-    a.onerror = fallback;
-    lit(true);
-    var playing = a.play();
-    if (playing && playing.catch) playing.catch(fallback);
-  }
-
-  function speakAcronym() {
-    if (clip) {
-      var failed = function () { markSpeaking(false); clip = null; speakSynthesised(deck[view].say); };
-      try {
-        clip.currentTime = 0;
-        clip.onended = function () { markSpeaking(false); };
-        clip.onerror = failed;
-        var playing = clip.play();
-        markSpeaking(true);
-        if (playing && playing.catch) playing.catch(failed);
-        return;
-      } catch (e) { failed(); return; }
-    }
-    speakSynthesised(deck[view].say);
-  }
-
-  function speakSynthesised(spoken) {
-    if (!speech || !spoken) return;
-    try {
-      if (speech.speaking || speech.pending) speech.cancel();   // don't talk over ourselves
-      var u = new SpeechSynthesisUtterance(spoken);
-      if (!voice) voice = pickVoice();
-      if (voice) u.voice = voice;
-      u.lang = "en-GB";                    // steers the fallback voice too
-      u.rate = 0.85;                       // unfamiliar strings need the extra beat
-      u.onstart = function () { markSpeaking(true); };
-      u.onend = u.onerror = function () { markSpeaking(false); };
-      speech.speak(u);
-    } catch (e) { /* a device that won't speak simply stays quiet */ }
-  }
-
-  function setUpSpeech() {
-    // Only hide the button where neither recordings nor synthesis are possible.
-    if (!canPlayFiles && !speech) { el("btn-speak").hidden = true; return; }
-    if (!speech) return;
-    voice = pickVoice();
-    // Chrome populates the voice list asynchronously.
-    if (typeof speech.addEventListener === "function") {
-      speech.addEventListener("voiceschanged", function () { voice = pickVoice(); });
-    }
   }
 
   /* ---------- screens ---------- */
@@ -772,9 +581,6 @@
 
   // Draws whichever card `i` points at — the live one, or an earlier one being reviewed.
   function renderAt(i) {
-    if (speech && (speech.speaking || speech.pending)) speech.cancel();
-    if (clip) { try { clip.pause(); } catch (e) { /* nothing playing */ } }
-    markSpeaking(false);
     view = i;
     var card = deck[i];
     var past = log[i];
@@ -784,7 +590,6 @@
     el("acronym").textContent = card.w;
     el("field").textContent = card.cat;
     el("def").textContent = card.def;
-    clip = loadClip(card.w);
 
     if (past) {
       el("ruling").className = "ruling " + (past.correct ? "right" : "wrong");
@@ -822,7 +627,7 @@
     var card = deck[index];
     var correct = (saidReal === card.real);
     if (correct) score++;
-    log.push({ w: card.w, say: card.say, real: card.real, guess: saidReal, correct: correct });
+    log.push({ w: card.w, real: card.real, guess: saidReal, correct: correct });
     renderAt(index);
   }
 
@@ -870,13 +675,6 @@
         '<div class="recap-detail hidden" id="recap-detail-' + i + '">' +
           '<div class="detail-head">' +
             '<span class="field">' + card.cat + '</span>' +
-            '<button type="button" class="speak" id="recap-speak-' + i + '" aria-label="Hear ' + r.w + '">' +
-              '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
-                '<path d="M4 9.5v5h3.4L12 18.5v-13L7.4 9.5H4z" fill="currentColor" />' +
-                '<path d="M15.8 8.8a4.6 4.6 0 0 1 0 6.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />' +
-                '<path d="M18.6 6.2a8.4 8.4 0 0 1 0 11.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />' +
-              '</svg>' +
-            '</button>' +
           '</div>' +
           '<p class="detail-def">' + card.def + '</p>' +
           '<p class="detail-note">' + card.note + '</p>' +
@@ -892,10 +690,6 @@
       el("recap-row-" + i).setAttribute("aria-expanded", "false");
       el("recap-detail-" + i).classList.add("hidden");
       el("recap-row-" + i).addEventListener("click", function () { toggleDetail(i); });
-      el("recap-speak-" + i).addEventListener("click", function (e) {
-        e.stopPropagation();
-        playClip(r.w, r.say, el("recap-speak-" + i));
-      });
     });
     openDetail = -1;
 
@@ -959,7 +753,6 @@
   el("btn-real").addEventListener("click", function () { answer(true); });
   el("btn-fake").addEventListener("click", function () { answer(false); });
   el("btn-next").addEventListener("click", next);
-  el("btn-speak").addEventListener("click", speakAcronym);
   el("btn-back").addEventListener("click", function () { if (view > 0) renderAt(view - 1); });
   el("btn-forward").addEventListener("click", function () { if (view < index) renderAt(view + 1); });
 
@@ -969,7 +762,6 @@
       if (e.key === "Enter" && !el("start").classList.contains("hidden")) startGame();
       return;
     }
-    if (e.key === "s" || e.key === "S") { e.preventDefault(); speakAcronym(); return; }
     if (!answered) {
       if (e.key === "ArrowLeft"  || e.key === "r" || e.key === "R") { e.preventDefault(); answer(true); }
       if (e.key === "ArrowRight" || e.key === "f" || e.key === "F") { e.preventDefault(); answer(false); }
@@ -984,12 +776,7 @@
   [1, 2, 3].forEach(function (i) {
     el("lvl-" + i).addEventListener("click", function () { setLevel(i); });
   });
-  VOICE_NAMES.forEach(function (v) {
-    el("voice-" + v).addEventListener("click", function () { setVoice(v, true); });
-  });
-  setVoice(read(STORE_VOICE, "emma"), false);
   setLevel(read(STORE_LEVEL, 2));
-  setUpSpeech();
   renderBest();
 })();
 </script>

@@ -70,11 +70,11 @@ if (noEx.length) flag('real acronyms with no example: ' + noEx.map(x => x.w).joi
 const fakeEx = bank.fake.filter(x => x.ex);
 if (fakeEx.length) flag('invented acronyms carrying an example: ' + fakeEx.map(x => x.w).join(', '));
 const odd = names.filter(w => !/^[a-z]+$/.test(w));
-if (odd.length) flag('acronyms that are not plain lowercase (audio filenames break): ' + odd.join(', '));
+if (odd.length) flag('acronyms that are not plain lowercase: ' + odd.join(', '));
 const notes = bank.fake.filter(x => !/^Fake/.test(x.note));
 if (notes.length) flag('invented notes not opening "Fake": ' + notes.map(x => x.w).join(', '));
 const badSay = all.filter(x => !/^[A-Za-z][A-Za-z '-]*$/.test(x.say));
-if (badSay.length) flag('spoken forms with characters the renderer will trip on: ' + badSay.map(x => x.w).join(', '));
+if (badSay.length) flag('spoken forms that are not plain letters: ' + badSay.map(x => x.w).join(', '));
 if (!problems) console.log('  clean');
 
 /* ---------- does the expansion actually produce the acronym? ---------- */

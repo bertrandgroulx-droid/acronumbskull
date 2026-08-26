@@ -31,34 +31,19 @@ invented for a quiz.
 - Back and Forward buttons to step through the ones you have already answered.
 - Score out of 10 with a rank and a copyable emoji result grid.
 - A per-card recap where any row can be tapped open for the expansion, the note, the
-  example sentence, the answer you gave, and a speaker to hear it again.
-- Play again returns to the options, so difficulty and voice can be changed between
-  games.
+  example sentence and the answer you gave.
+- Play again returns to the options, so the difficulty can be changed between games.
 - Personal best saved per difficulty, and labelled with the level it was set at.
-- A speaker button that reads the acronym aloud in a recorded British female voice —
-  the same voice on every device, not the phone's robotic built-in one. Acronyms said
-  as words are said as words; initialisms are spelled out.
-- Four voices to choose from — Emma, Isabella, Alice and Lily. Tapping one plays an
-  acronym in it, and the choice is remembered.
 - Every real acronym comes with an example sentence, shown whether you got it right
   or not.
-- Keyboard play: `←` real, `→` fake, `S` to hear it; once answered, the arrows move
-  through your answers and `Enter` goes on.
+- Keyboard play: `←` real, `→` fake; once answered, the arrows move through your
+  answers and `Enter` goes on.
 - Light and dark themes, following whatever your phone is set to.
-- No build step, no dependencies, no tracking.
-
-The clips are rendered offline with [Kokoro](https://github.com/thewh1teagle/kokoro-onnx)
-(Apache-2.0) and shipped with the game, because device speech synthesis sounds
-robotic on phones — iOS ships compact voices by default. If a clip will not play, the
-browser's own synthesis takes over: the game asks for `en-GB` and works down a list of
-the good British female voices that ship on common platforms, then any British voice
-that is not obviously male, then any British voice at all. A device with no speech
-support simply hides the button.
+- No build step, no dependencies, no tracking. One HTML file and one data file.
 
 ## Run it locally
 
-It's a static site — serve the folder (the audio needs a server, so opening the file
-directly will fall back to synthesis):
+It's a static site — double-click `index.html`, or serve the folder:
 
 ```sh
 python3 -m http.server 8000
@@ -84,7 +69,7 @@ to, so the source has to be set by hand first either way.
 ## Tests and audits
 
 ```sh
-node tests/run-all.js                # eight suites, driving the real game logic
+node tests/run-all.js                # six suites, driving the real game logic
 node tools/audit.js --dict dict.txt --ref acronyms-ref.csv    # fairness audit
 node tools/screen.js --ref acronyms-ref.csv ZMP PLOD KESTREL  # screen candidates
 ```
@@ -99,17 +84,6 @@ curl -sL -o acronyms-ref.csv https://raw.githubusercontent.com/krishnakt031990/C
 
 Run the suites after touching `index.html`, and the audit after touching
 `acronyms.js`.
-
-## Regenerating the audio
-
-```sh
-pip install kokoro-onnx soundfile lameenc mutagen
-curl -LO https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx
-curl -LO https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
-python3 tools/make-audio.py --model kokoro-v1.0.onnx --voices voices-v1.0.bin
-```
-
-Existing clips are left alone, so adding entries only renders the new ones.
 
 ## Adding acronyms
 
@@ -165,11 +139,10 @@ borrowed fakes, a player who recognises every acronym on sight only ever has to 
 the meaning; with only coined ones, recognising the letters wins the card outright.
 Mixed, neither half of that knowledge settles anything on its own.
 
-- `w` is the acronym, lowercase — it is displayed in capitals and it names the audio
-  file, so it has to be plain letters.
-- `say` is what the speech renderer is handed. SCUBA is a word and is read as one;
-  PDF has to arrive as `"P D F"` or the model tries to pronounce it. A bare `A` is
-  read as the article, so the letter A is written `A-`.
+- `w` is the acronym, lowercase — it is displayed in capitals.
+- `say` records how it is read aloud: SCUBA as a word, PDF as `"P D F"`. Nothing
+  displays it; the audit reads it, because an acronym said as a word and one spelled
+  out are visibly different things and have to be split evenly across both sides.
 - `cat` is the field printed on the card.
 - `def` is the expansion the player is judging: the real one in `REAL_ACRONYMS`, an
   invented one in `FAKE_ACRONYMS`.

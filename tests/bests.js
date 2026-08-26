@@ -14,9 +14,8 @@ function harness(store) {
     handlers:{}, addEventListener(e,f){this.handlers[e]=f;}, focus(){} }; };
   const document={getElementById:id=>(els[id]=els[id]||makeEl(id)),addEventListener:()=>{}};
   const localStorage={getItem:k=>k in store?store[k]:null,setItem:(k,v)=>{store[k]=v;}};
-  function Audio(){ this.play=()=>({catch(){}}); this.pause=()=>{}; this.currentTime=0; this.preload=''; }
-  new Function('document','localStorage','window','navigator','Audio',words+'\n'+script)
-    (document, localStorage, {scrollTo(){},prompt(){}}, {}, Audio);
+  new Function('document','localStorage','window','navigator',words+'\n'+script)
+    (document, localStorage, {scrollTo(){},prompt(){}}, {});
   return els;
 }
 const ok=(c,m)=>{ if(!c) throw new Error('FAIL: '+m); };

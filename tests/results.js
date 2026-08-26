@@ -12,10 +12,8 @@ function makeEl(id){ const set=new Set(); return { id, textContent:'', innerHTML
   handlers:{}, addEventListener(e,f){this.handlers[e]=f;}, focus(){} }; }
 const els={}; const document={getElementById:id=>(els[id]=els[id]||makeEl(id)),addEventListener:()=>{}};
 const store={}; const localStorage={getItem:k=>k in store?store[k]:null,setItem:(k,v)=>{store[k]=v;}};
-const played=[];
-function Audio(src){ played.push(src); this.play=function(){return {catch(){}};}; this.pause=function(){}; this.currentTime=0; this.preload=''; }
-new Function('document','localStorage','window','navigator','Audio',words+'\n'+script)
-  (document, localStorage, {scrollTo(){},prompt(){}}, {}, Audio);
+new Function('document','localStorage','window','navigator',words+'\n'+script)
+  (document, localStorage, {scrollTo(){},prompt(){}}, {});
 
 const bank = new Function(words + '; return {r:REAL_ACRONYMS,k:FAKE_ACRONYMS};')();
 const byWord = new Map([...bank.r, ...bank.k].map(x => [x.w, x]));
@@ -62,11 +60,6 @@ seen.forEach((s, i) => {
 const fakes = seen.filter(s => !byWord.get(s.w).ex).length;
 console.log(`recap details verified for 10 acronyms (${10-fakes} real with examples, ${fakes} fake without)`);
 
-// the speaker inside a row plays that word in the chosen voice
-played.length = 0;
-els['recap-speak-5'].handlers.click({ stopPropagation(){} });
-ok(played.some(p => p === 'audio/emma/' + seen[5].w + '.mp3'),
-   'row speaker should play its own acronym, got ' + JSON.stringify(played));
 
 // Play again goes back to the options rather than dealing immediately
 els['btn-again'].handlers.click();

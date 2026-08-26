@@ -18,11 +18,12 @@
  * Real entries also carry `ex` — a sentence using the acronym. Fake ones must not,
  * because the example is what makes the example appear.
  *
- * `say` is the text handed to the speech renderer, not to the screen. Acronyms that
- * are pronounced as words carry the word; ones that are spelled out carry spaced
- * letters, which is the only way a synthesiser reads them one letter at a time.
+ * `say` records how the acronym is read: pronounced as a word (SCUBA is "scuba") or
+ * spelled out letter by letter (PDF is "P D F"). Nothing displays it. The fairness
+ * audit reads it, because whether an acronym is said as a word or as letters is
+ * visible at a glance and so has to occur at the same rate on both sides of the bank.
  *
- * `w` must be plain lowercase letters — it is also the audio filename.
+ * `w` must be plain lowercase letters.
  * The game picks ten entries per round from one difficulty level.
  */
 
