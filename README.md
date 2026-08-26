@@ -240,7 +240,7 @@ where the real half sits:
   real half is in the list against 49% of the borrowed fakes.
 - **Word shape.** 52% of the real half spells an English word against 50% of the fake
   half. Borrowed fakes came in at 41% and coined ones — invented as birds, tools and
-  knots — at 76%, which is exactly the habit the parent project found. Mixed, they
+  knots — at 69%, which is exactly the habit the parent project found. Mixed, they
   land on the real half's rate.
 - **Vowels.** Coined initialisms come out as consonant clusters (KFL, ZBN, QRB),
   because a made-up initialism has no word behind it to supply an A or an I; borrowed
@@ -272,8 +272,8 @@ found by the audit rather than by thinking. Run it after each batch.
 
 ### Keep the fields balanced
 
-No single subject should dominate. Military and computing are the largest at around
-14% of the bank each, then medicine, government and science. When a field starts to feel
+No single subject should dominate. Military is the largest at 14% of the bank, then
+computing at 12%, then medicine and government. When a field starts to feel
 repetitive in play, trim it and widen the rest rather than adding more of the same.
 
 ## Built from a recipe
