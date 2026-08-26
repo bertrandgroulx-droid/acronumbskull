@@ -32,7 +32,7 @@ unchanged. Two files hold the whole game, and one of them is the content.
 | `acronyms.js` | the content: two arrays, `REAL_ACRONYMS` and `FAKE_ACRONYMS` |
 | `tools/audit.js` | the fairness audit — run it after every batch |
 | `tools/screen.js` | screens a candidate against a reference list *before* you write it up |
-| `tests/` | six suites that drive the real game logic against a DOM stub |
+| `tests/` | seven suites that drive the real game logic against a DOM stub |
 | `.github/workflows/pages.yml` | an Actions deploy, dormant here — see **Deploy** below |
 
 A real entry carries `ex`, the example sentence. Fakes must not, because the example
@@ -128,6 +128,12 @@ CAT, PET, RICE, FAST, BRAT, FLOPS, CMOS, SAD, ADSL, PCR, SITREP.
 
 Match **within each difficulty level**, not just overall; the aggregate can look fine
 while one level leaks badly.
+
+**4. Match how the answer is built, not just how it reads — and then show your
+working.** Answering a card lights up the letters that make the acronym, which is most
+of the payoff: SNOBOL is StriNg Oriented symBOlic Language. The game works it out with
+the same matcher the audit uses, and five entries carry a `spell` field for the cases
+where the cheapest reading is not the true one.
 
 **4. Match how the answer is built, not just how it reads.** Real acronyms cheat:
 RADAR skips the "and", MODEM takes three letters out of "modulator", GESTAPO takes two

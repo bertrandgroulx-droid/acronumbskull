@@ -34,7 +34,7 @@ ok(hidden('nav'), 'nav should be hidden on acronym 1');
 // --- play three words, always answering "real", recording what we saw ---
 const seen = [];
 for (let i = 0; i < 3; i++) {
-  seen.push({ w: els.acronym.textContent, def: els.def.textContent, ruling: null });
+  seen.push({ w: els.acronym.textContent, def: els.def.innerHTML, ruling: null });
   els['btn-real'].handlers.click();
   seen[i].ruling = els['ruling-text'].textContent;
   seen[i].truth  = els['truth'].textContent;
@@ -49,7 +49,9 @@ const liveCard = els.acronym.textContent;
 for (let i = 2; i >= 0; i--) {
   els['btn-back'].handlers.click();
   ok(els.acronym.textContent === seen[i].w, `back should show "${seen[i].w}", showed "${els.acronym.textContent}"`);
-  ok(els.def.textContent === seen[i].def, 'expansion should match the reviewed acronym');
+  // answered cards mark the acronym's letters, so compare with the markup stripped
+  const shown = els.def.innerHTML.replace(/<\/?b>/g, '');
+  ok(shown === seen[i].def, `expansion should match the reviewed acronym, got "${shown}"`);
   ok(els['ruling-text'].textContent === seen[i].ruling, 'ruling should match what was scored then');
   ok(els['truth'].textContent === seen[i].truth, 'status should match the reviewed acronym');
   ok(els['said'].textContent === 'You answered Real', 'review should show the answer given');

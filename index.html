@@ -308,6 +308,8 @@
   }
   .detail-head { display: flex; align-items: center; gap: 10px; }
   .detail-def { margin: 0; font-size: 1.05rem; color: var(--ink); }
+  /* the letters that make the acronym, shown once the card is answered */
+  .def b, .detail-def b { color: var(--accent); font-weight: 800; text-transform: uppercase; }
   .detail-note { margin: 0; font-size: 0.95rem; color: var(--muted); }
   .detail-note em, .detail-def em { font-style: italic; color: var(--ink); font-weight: 600; }
   .recap-detail .said { text-align: left; }
@@ -526,6 +528,117 @@
     return picked;
   }
 
+  /* ---------- showing how the letters are taken ---------- */
+  // Once a card is answered, the expansion lights up the letters that produce the
+  // acronym: SNOBOL is StriNg Oriented symBOlic Language, and seeing that is most of
+  // the payoff. Real acronyms cheat — RADAR skips the "and", GESTAPO takes two letters
+  // from each word, AWOL fishes its O out of the middle of "withOut" — so this hunts
+  // for the cheapest honest reading rather than assuming one letter per word. Same
+  // matcher as tools/audit.js, which is what guarantees every entry has a reading.
+  var SMALL = "and of the for to a an in on at by or with is it that what you see my i as soon possible";
+  var SMALL_SET = {};
+  SMALL.split(" ").forEach(function (w) { SMALL_SET[w] = true; });
+
+  function reading(acronym, def) {
+    var letters = acronym.toLowerCase().split("");
+    var words = [], re = /[A-Za-z]+/g, m;
+    while ((m = re.exec(def)) !== null) words.push({ text: m[0].toLowerCase(), at: m.index });
+
+    // every run of letters this word can supply, in order but not necessarily adjacent
+    function takes(word, li) {
+      var out = [], pos = [], taken = 0;
+      for (var wi = 0; wi < word.length && li + taken < letters.length; wi++) {
+        if (word.charAt(wi) === letters[li + taken]) {
+          pos.push(wi); taken++;
+          var gapped = 0;
+          for (var k = 1; k < pos.length; k++) if (pos[k] !== pos[k - 1] + 1) gapped = 1;
+          // A word almost always gives up its own first letter — GEheime, STAatspolizei.
+          // A run starting anywhere else is usually the matcher being too clever.
+          out.push({ take: taken, gapped: gapped, mid: pos[0] === 0 ? 0 : 1, pos: pos.slice() });
+        }
+      }
+      return out;
+    }
+
+    // Words left over once the acronym is complete. A real expansion is usually made
+    // of exactly the words that spell it, so a reading that abandons "language" at the
+    // end is probably the wrong reading — but a gloss ("…, the secret state police")
+    // is common enough that this is a nudge and not a veto.
+    function leftover(wi) {
+      var c = 0;
+      for (var k = wi; k < words.length; k++) if (!SMALL_SET[words[k].text]) c += 50;
+      return c;
+    }
+
+    var memo = {};
+    function walk(wi, li) {
+      if (li === letters.length) return { cost: leftover(wi), path: [] };
+      if (wi === words.length) return null;
+      var key = wi + ":" + li;
+      if (key in memo) return memo[key];
+      var best = null;
+      var consider = function (c) { if (c && (!best || c.cost < best.cost)) best = c; };
+      var skipped = walk(wi + 1, li);
+      if (skipped) consider({                        // pass the word over: cheap if it is "and"
+        cost: skipped.cost + (SMALL_SET[words[wi].text] ? 1 : 1000),
+        path: skipped.path
+      });
+      takes(words[wi].text, li).forEach(function (t) {
+        var rest = walk(wi + 1, li + t.take);
+        if (rest) consider({
+          // the trailing 5 is a nudge towards fewer, longer takes: QUAsi-StellAR
+          // beats QUAsi-Stell[a]r [r]adio, which spells the same letters by luck
+          cost: rest.cost + t.mid * 400 + (t.take > 1 ? 100 : 0) + t.gapped * 10 + 5,
+          path: [{ at: words[wi].at, pos: t.pos }].concat(rest.path)
+        });
+      });
+      memo[key] = best;
+      return best;
+    }
+    var found = walk(0, 0);
+    return found ? found.path : null;
+  }
+
+  // "[qua]si-[s]tell[ar] radio source" -> the same words with those letters lit
+  function fromBrackets(spell) {
+    var out = "", i = 0;
+    while (i < spell.length) {
+      var open = spell.indexOf("[", i);
+      if (open === -1) { out += escapeHTML(spell.slice(i)); break; }
+      var close = spell.indexOf("]", open);
+      if (close === -1) { out += escapeHTML(spell.slice(i)); break; }
+      out += escapeHTML(spell.slice(i, open)) + "<b>" + escapeHTML(spell.slice(open + 1, close)) + "</b>";
+      i = close + 1;
+    }
+    return out;
+  }
+
+  function escapeHTML(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  // The expansion with its acronym letters marked. Anything the matcher cannot read —
+  // PELICAN and YUPPIE were fitted to their names afterwards — comes back plain.
+  //
+  // A handful of entries carry `spell`, the expansion with its letters in brackets,
+  // because a cheapest reading is not always the true one: QUASAR really takes its AR
+  // from stellAR rather than one letter each from radio and source. Where the bank
+  // says how the letters were taken, the bank wins.
+  function spelled(card) {
+    if (card.spell) return fromBrackets(card.spell);
+    var path = reading(card.w, card.def);
+    if (!path) return escapeHTML(card.def);
+    var lit = {};
+    path.forEach(function (p) { p.pos.forEach(function (o) { lit[p.at + o] = true; }); });
+    var out = "", run = "";
+    for (var i = 0; i < card.def.length; i++) {
+      if (lit[i]) { run += card.def.charAt(i); continue; }
+      if (run) { out += "<b>" + escapeHTML(run) + "</b>"; run = ""; }
+      out += escapeHTML(card.def.charAt(i));
+    }
+    return run ? out + "<b>" + escapeHTML(run) + "</b>" : out;
+  }
+
   /* ---------- screens ---------- */
   function show(name) {
     ["start", "game", "results"].forEach(function (id) {
@@ -589,7 +702,9 @@
 
     el("acronym").textContent = card.w;
     el("field").textContent = card.cat;
-    el("def").textContent = card.def;
+    // One path either way, so the markup is always what the reveal put there: plain
+    // while the card is unanswered, letters lit once it has been.
+    el("def").innerHTML = past ? spelled(card) : escapeHTML(card.def);
 
     if (past) {
       el("ruling").className = "ruling " + (past.correct ? "right" : "wrong");
@@ -676,7 +791,7 @@
           '<div class="detail-head">' +
             '<span class="field">' + card.cat + '</span>' +
           '</div>' +
-          '<p class="detail-def">' + card.def + '</p>' +
+          '<p class="detail-def">' + spelled(card) + '</p>' +
           '<p class="detail-note">' + card.note + '</p>' +
           (card.ex ? '<p class="example">&ldquo;' + card.ex + '&rdquo;</p>' : '') +
           '<p class="said">You answered ' + (r.guess ? "Real" : "Fake") + '</p>' +

@@ -33,8 +33,8 @@ function playGame(strategy){
   for (let i=0;i<10;i++){
     const w = els.acronym.textContent;
     const isReal = REAL.has(w);
-    seen.push({w, isReal, def: els.def.textContent, pos: els.field.textContent, ruling: null});
-    if (!els.def.textContent || !els.field.textContent) throw new Error('empty card fields for '+w);
+    seen.push({w, isReal, def: els.def.innerHTML, pos: els.field.textContent, ruling: null});
+    if (!els.def.innerHTML || !els.field.textContent) throw new Error('empty card fields for '+w);
     const strategyReal = strategy(isReal);
     els[strategyReal ? 'btn-real' : 'btn-fake'].handlers.click();
     seen[i].ruling = els['ruling-text'].textContent;

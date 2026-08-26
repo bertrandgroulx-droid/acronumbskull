@@ -75,6 +75,12 @@ const notes = bank.fake.filter(x => !/^Fake/.test(x.note));
 if (notes.length) flag('invented notes not opening "Fake": ' + notes.map(x => x.w).join(', '));
 const badSay = all.filter(x => !/^[A-Za-z][A-Za-z '-]*$/.test(x.say));
 if (badSay.length) flag('spoken forms that are not plain letters: ' + badSay.map(x => x.w).join(', '));
+// `spell` overrides the automatic reading, so it has to be the same words with the
+// acronym's own letters bracketed — a typo here would light the wrong letters.
+const badSpell = all.filter(x => x.spell && (
+  x.spell.replace(/[\[\]]/g, '') !== x.def ||
+  (x.spell.match(/\[([^\]]*)\]/g) || []).join('').replace(/[\[\]]/g, '').toLowerCase() !== x.w));
+if (badSpell.length) flag('spell overrides that do not match their entry: ' + badSpell.map(x => x.w).join(', '));
 if (!problems) console.log('  clean');
 
 /* ---------- does the expansion actually produce the acronym? ---------- */
@@ -82,59 +88,70 @@ if (!problems) console.log('  clean');
 // (RADAR takes nothing from "and"), and they take a run of letters out of one
 // word (MODEM is modulator-demodulator). An invented set where every letter is
 // the first letter of its own word is a set a player can spot at a glance.
-const SMALL = new Set(['and', 'of', 'the', 'for', 'to', 'a', 'an', 'in', 'on', 'at', 'by', 'or', 'with', 'is', 'it', 'that', 'what', 'you', 'see', 'my', 'i', 'as', 'soon', 'possible']);
-function fit(entry) {
-  const letters = entry.w.toLowerCase().split('');
-  const src = entry.def.split(/[^A-Za-z]+/).filter(Boolean).map(w => w.toLowerCase());
-  const memo = new Map();
-  const cost = x => x.skips * 1000 + x.multi * 100 + x.gapped * 10 + x.small;
-  // Every word may give up a run of its letters, in order but not necessarily
-  // adjacent — that is how AWOL gets its O out of "withOut" and QUASAR its AR
-  // out of "stellAR". Words may also be passed over entirely.
-  function takes(word, li) {
-    // all the ways this word can supply 1+ of the next acronym letters
-    const out = [];
-    let wi = 0, taken = 0, gaps = 0;
-    while (wi < word.length && li + taken < letters.length) {
-      if (word[wi] === letters[li + taken]) {
-        if (taken > 0 && out.length && wi !== out[out.length - 1].at + 1) gaps = 1;
-        taken++;
-        out.push({ take: taken, gapped: gaps || (taken > 1 && wi !== out[out.length - 1].at + 1) ? 1 : 0, at: wi });
-      }
-      wi++;
+/* The game marks the letters that make the acronym when a card is answered, and it
+ * has to agree with this audit about how they were taken. So rather than keeping a
+ * second matcher here, pull the shipped one out of index.html and measure that.
+ */
+const gameScript = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8')
+  .match(/<script>\n([\s\S]*?)<\/script>/)[1];
+const game = new Function(
+  gameScript.slice(gameScript.indexOf('var SMALL ='), gameScript.indexOf('/* ---------- screens')) +
+  '; return { reading: reading, SMALL_SET: SMALL_SET };')();
+
+// Where the letters landed, as the game would light them.
+function litPositions(entry) {
+  if (entry.spell) {
+    const lit = new Set();
+    let i = 0, inside = false;
+    for (const ch of entry.spell) {
+      if (ch === '[') { inside = true; continue; }
+      if (ch === ']') { inside = false; continue; }
+      if (inside) lit.add(i);
+      i++;
     }
-    // recompute "gapped" honestly: a run is gapped if the letters were not adjacent
-    let last = -2, gapped = 0;
-    return out.map((o, i) => {
-      if (i > 0 && o.at !== out[i - 1].at + 1) gapped = 1;
-      return { take: o.take, gapped };
-    });
+    return lit;
   }
-  function walk(wi, li) {
-    if (li === letters.length) return { skips: 0, multi: 0, gapped: 0, small: 0 };
-    if (wi === src.length) return null;
-    const key = wi + ':' + li;
-    if (memo.has(key)) return memo.get(key);
-    let best = null;
-    const consider = c => { if (c && (!best || cost(c) < cost(best))) best = c; };
-    const skipped = walk(wi + 1, li);
-    if (skipped) consider({
-      skips: skipped.skips + (SMALL.has(src[wi]) ? 0 : 1),
-      multi: skipped.multi, gapped: skipped.gapped,
-      small: skipped.small + (SMALL.has(src[wi]) ? 1 : 0),
-    });
-    for (const t of takes(src[wi], li)) {
-      const rest = walk(wi + 1, li + t.take);
-      if (rest) consider({
-        skips: rest.skips, multi: rest.multi + (t.take > 1 ? 1 : 0),
-        gapped: rest.gapped + t.gapped, small: rest.small,
-      });
-    }
-    memo.set(key, best);
-    return best;
-  }
-  return walk(0, 0);
+  const path = game.reading(entry.w, entry.def);
+  if (!path) return null;
+  const lit = new Set();
+  path.forEach(p => p.pos.forEach(o => lit.add(p.at + o)));
+  return lit;
 }
+
+/* How the letters were taken, in the terms that matter for fairness: one per word, a
+ * word giving up two or more, letters lifted from inside a word, a small word skipped
+ * over, a word that matters skipped over. Anything the matcher cannot read at all
+ * comes back null.
+ */
+function fit(entry) {
+  const lit = litPositions(entry);
+  if (!lit) return null;
+  const counts = { skips: 0, multi: 0, gapped: 0, small: 0 };
+  const words = [];
+  const re = /[A-Za-z]+/g;
+  let m;
+  while ((m = re.exec(entry.def)) !== null) {
+    const pos = [];
+    for (let k = 0; k < m[0].length; k++) if (lit.has(m.index + k)) pos.push(k);
+    words.push({ text: m[0].toLowerCase(), pos });
+  }
+  const used = words.map((w, i) => (w.pos.length ? i : -1)).filter(i => i !== -1);
+  if (!used.length) return null;
+  words.forEach((w, i) => {
+    if (w.pos.length > 1) {
+      counts.multi++;
+      for (let k = 1; k < w.pos.length; k++) if (w.pos[k] !== w.pos[k - 1] + 1) { counts.gapped++; break; }
+    } else if (w.pos.length === 1 && w.pos[0] !== 0) {
+      counts.gapped++;                       // one letter, taken from inside the word
+    }
+    // a word passed over between the first and last contribution
+    if (!w.pos.length && i > used[0] && i < used[used.length - 1]) {
+      if (game.SMALL_SET[w.text]) counts.small++; else counts.skips++;
+    }
+  });
+  return counts;
+}
+
 console.log('\nDOES THE EXPANSION SPELL THE ACRONYM?');
 const misfitFake = bank.fake.filter(x => !fit(x));
 if (misfitFake.length) flag('invented expansion does not spell its acronym: ' + misfitFake.map(x => x.w).join(', '));

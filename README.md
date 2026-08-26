@@ -69,7 +69,7 @@ to, so the source has to be set by hand first either way.
 ## Tests and audits
 
 ```sh
-node tests/run-all.js                # six suites, driving the real game logic
+node tests/run-all.js                # seven suites, driving the real game logic
 node tools/audit.js --dict dict.txt --ref acronyms-ref.csv    # fairness audit
 node tools/screen.js --ref acronyms-ref.csv ZMP PLOD KESTREL  # screen candidates
 ```
@@ -143,6 +143,7 @@ Mixed, neither half of that knowledge settles anything on its own.
 - `say` records how it is read aloud: SCUBA as a word, PDF as `"P D F"`. Nothing
   displays it; the audit reads it, because an acronym said as a word and one spelled
   out are visibly different things and have to be split evenly across both sides.
+- `spell` is optional, and only five entries carry it. See below.
 - `cat` is the field printed on the card.
 - `def` is the expansion the player is judging: the real one in `REAL_ACRONYMS`, an
   invented one in `FAKE_ACRONYMS`.
@@ -156,6 +157,27 @@ Mixed, neither half of that knowledge settles anything on its own.
 
 The game works out real vs. fake from which array the entry is in, so there is no flag
 to get wrong. By convention a real note opens "Real" and a fake one opens "Fake".
+
+### Answering a card shows how the letters were taken
+
+Once you have answered, the expansion lights up the letters that make the acronym:
+SNOBOL is **StriNg** **O**riented sym**bo**lic **l**anguage, GESTAPO is **Ge**heime
+**Sta**ats**po**lizei. That is most of the payoff of the round, and the game works it
+out for itself — the same matcher the audit uses, searching for the cheapest honest
+reading rather than assuming one letter per word.
+
+Cheapest is not always truest, so five entries carry a `spell` field that overrides
+it — the expansion with the acronym's own letters in brackets:
+
+```js
+{ w: "quasar", …, def: "quasi-stellar radio source",
+  spell: "[qua]si-[s]tell[ar] radio source", … }
+```
+
+QUASAR really takes its AR from stell**ar**; left alone, the matcher preferred one
+letter each from *radio* and *source*, which spells the same word by luck. The others
+are SAMPLE, SCART, SPECTRE and TASER. The audit checks every override against its own
+entry, so a typo in one cannot light the wrong letters.
 
 ### An invented expansion still has to spell the acronym
 

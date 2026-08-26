@@ -49,9 +49,11 @@ ok(els['recap-row-7'].getAttribute('aria-expanded')==='false', 'aria-expanded sh
 
 // the detail carries the real content for that word
 const detailHtml = els.recap.innerHTML;
+// the expansion is marked up letter by letter in the recap, so strip that to compare
+const detailPlain = detailHtml.replace(/<\/?b>/g, '');
 seen.forEach((s, i) => {
   const entry = byWord.get(s.w);
-  ok(detailHtml.includes(entry.def), `expansion for "${s.w}" missing from the recap`);
+  ok(detailPlain.includes(entry.def), `expansion for "${s.w}" missing from the recap`);
   ok(detailHtml.includes(entry.note), `note for "${s.w}" missing from the recap`);
   if (entry.ex) ok(detailHtml.includes(entry.ex), `example for real expansion "${s.w}" missing`);
   ok(detailHtml.includes('You answered ' + (s.guessedReal ? 'Real' : 'Fake')),
