@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Acronumbskull</title>
+<meta name="description" content="Ten acronyms and what they supposedly stand for. Some are genuine. The rest were made up. Can you tell which is which?" />
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0e1016" media="(prefers-color-scheme: dark)" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#128292;</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Public+Sans:ital,wght@0,400..800;1,400..600&display=swap" />
+<style>
+  :root {
+    /* light — cool, slightly blue-biased neutrals */
+    --ground: #f6f7fb;
+    --surface: #ffffff;
+    --surface-sunk: #f1f3f9;
+    --ink: #12141c;
+    --ink-soft: #3c4250;
+    --muted: #6a7284;
+    --rule: #e3e7f0;
+    --accent: #0b63d6;
+    --accent-soft: #e7f1fe;
+    --genuine: #0b8f5f;
+    --genuine-soft: #e6f6ef;
+    --fabricated: #cf3030;
+    --fabricated-soft: #fdecec;
+    --shadow: 0 1px 2px rgba(18, 20, 28, .05), 0 12px 28px -12px rgba(18, 20, 28, .16);
+
+    --display: "Bricolage Grotesque", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif; /* wordmark only */
+    --sans: "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #0e1016;
+      --surface: #171a22;
+      --surface-sunk: #1e222c;
+      --ink: #f4f6fa;
+      --ink-soft: #d2d8e4;
+      --muted: #949cac;
+      --rule: #272c38;
+      --accent: #5aa9ff;
+      --accent-soft: #10233b;
+      --genuine: #3ed99b;
+      --genuine-soft: #12291f;
+      --fabricated: #ff7b7b;
+      --fabricated-soft: #2c1719;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 14px 32px -14px rgba(0, 0, 0, .7);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 1rem;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px calc(40px + env(safe-area-inset-bottom));
+  }
+  .wrap { width: 100%; max-width: 32rem; display: flex; flex-direction: column; gap: 20px; }
+
+  /* ---------- masthead ---------- */
+  header { text-align: center; }
+  .wordmark {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(1.7rem, 6.5vw, 2.1rem);
+    letter-spacing: -0.03em;
+    margin: 0;
+    line-height: 1.1;
+  }
+  .wordmark .mark { color: var(--accent); }
+  .tagline { color: var(--muted); font-size: 0.95rem; margin-top: 6px; }
+
+  /* ---------- card ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* ---------- progress ---------- */
+  .progress { display: flex; flex-direction: column; gap: 10px; }
+  .track { display: flex; gap: 4px; }
+  .seg {
+    flex: 1;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--surface-sunk);
+    transition: background .25s ease, transform .25s ease;
+  }
+  .seg.hit { background: var(--genuine); }
+  .seg.miss { background: var(--fabricated); }
+  .seg.now { background: var(--accent); transform: scaleY(1.5); }
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- the entry ---------- */
+  .entry { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+  /* Acronyms are set the way they are written: capitals, and with a little
+     more air between the letters than lower case wants. */
+  .headword {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: clamp(2rem, 8.5vw, 2.9rem);
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    margin: 0;
+    width: 100%;
+  }
+  .field {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .entry-meta { display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+  .speak {
+    flex: none;
+    width: 38px;
+    height: 38px;
+    min-height: 0;
+    padding: 0;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+    border: 1.5px solid var(--rule);
+  }
+  .speak svg { width: 19px; height: 19px; display: block; }
+  .speak:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+  .speak.speaking { color: var(--accent); border-color: var(--accent); animation: sound 1.1s ease-in-out infinite; }
+  .speak[hidden] { display: none; }
+  @keyframes sound {
+    0%, 100% { box-shadow: 0 0 0 0 var(--accent-soft); }
+    50% { box-shadow: 0 0 0 7px var(--accent-soft); }
+  }
+
+  .def {
+    font-size: 1.25rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 26em;
+    text-wrap: pretty;
+    margin: 0;
+  }
+
+  /* ---------- controls ---------- */
+  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  button {
+    font-family: var(--sans);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1.5px solid var(--rule);
+    border-radius: 12px;
+    min-height: 56px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease, background .15s ease, transform .08s ease;
+  }
+  button:hover { border-color: var(--muted); }
+  button:active { transform: translateY(1px); }
+  button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .choices .yes:hover { border-color: var(--genuine); color: var(--genuine); background: var(--genuine-soft); }
+  .choices .no:hover  { border-color: var(--fabricated); color: var(--fabricated); background: var(--fabricated-soft); }
+  .primary {
+    width: 100%;
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) { .primary { color: #0e1016; } }
+  .primary:hover { filter: brightness(1.08); border-color: var(--accent); }
+
+  .keys { font-size: 0.82rem; color: var(--muted); text-align: center; }
+  .keys kbd {
+    font-family: inherit; font-weight: 600;
+    border: 1px solid var(--rule); border-radius: 5px; padding: 1px 6px;
+  }
+  @media (hover: none) { .keys { display: none; } }
+
+  /* ---------- verdict ---------- */
+  .verdict { display: flex; flex-direction: column; gap: 16px; }
+  /* Colour carries one meaning only — whether you were right. The acronym's
+     own status sits below in neutral type, so green never means two things. */
+  .ruling {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    animation: pop .2s cubic-bezier(.2, 1.4, .4, 1);
+  }
+  .ruling.right { color: var(--genuine); }
+  .ruling.wrong { color: var(--fabricated); }
+  .ruling .icon {
+    flex: none;
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 50%;
+    background: currentColor;
+    display: grid;
+    place-items: center;
+  }
+  .ruling .glyph { color: var(--surface); font-size: 0.95rem; font-weight: 700; line-height: 1; }
+  @keyframes pop { from { transform: scale(.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  .truth {
+    align-self: center;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 7px 16px;
+    border-radius: 999px;
+  }
+  .truth.right { color: var(--genuine); background: var(--genuine-soft); }
+  .truth.wrong { color: var(--fabricated); background: var(--fabricated-soft); }
+
+  .said { text-align: center; font-size: 0.9rem; color: var(--muted); }
+
+  /* real acronyms get shown in use — the expansion tells you what it stands
+     for, the example tells you where you would meet it */
+  .example {
+    margin: 0;
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--ink-soft);
+    border-left: 3px solid var(--accent);
+    padding: 2px 0 2px 14px;
+  }
+  .example em { font-style: normal; font-weight: 700; color: var(--ink); }
+
+  /* stepping back through acronyms already answered */
+  .nav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .nav button { min-height: 48px; font-size: 0.95rem; }
+  .nav button:disabled { opacity: .4; cursor: default; }
+  .nav button:disabled:hover { border-color: var(--rule); }
+  .seg.viewing { transform: scaleY(2); }
+  .note {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 1rem;
+    background: var(--surface-sunk);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .note em { font-style: italic; font-weight: 600; color: var(--ink); }
+
+  /* ---------- results ---------- */
+  .score {
+    font-weight: 800;
+    font-size: clamp(3.4rem, 17vw, 4.6rem);
+    line-height: 1;
+    text-align: center;
+    letter-spacing: -0.05em;
+    font-variant-numeric: tabular-nums;
+  }
+  .score .of { color: var(--muted); font-size: 0.34em; letter-spacing: -0.02em; }
+  .rank {
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+    text-align: center;
+  }
+  .blurb { color: var(--muted); text-align: center; margin: 0; max-width: 26em; align-self: center; }
+  .split { text-align: center; font-size: 0.9rem; color: var(--muted); margin: 0; }
+  .recap { list-style: none; margin: 0; padding: 0; }
+  .recap li { border-top: 1px solid var(--rule); }
+  .recap li:last-child { border-bottom: 1px solid var(--rule); }
+  .recap-row {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%;
+    padding: 12px 2px;
+    min-height: 0;
+    background: none;
+    border: 0;
+    border-radius: 8px;
+    font-size: 1rem;
+    text-align: left;
+  }
+  .recap-row:hover { background: var(--surface-sunk); }
+  .chev {
+    flex: none; margin-left: 8px;
+    color: var(--muted); font-size: 0.75rem;
+    transition: transform .18s ease;
+  }
+  .recap-row[aria-expanded="true"] .chev { transform: rotate(180deg); }
+
+  .recap-detail {
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 4px 2px 16px;
+  }
+  .detail-head { display: flex; align-items: center; gap: 10px; }
+  .detail-def { margin: 0; font-size: 1.05rem; color: var(--ink); }
+  .detail-note { margin: 0; font-size: 0.95rem; color: var(--muted); }
+  .detail-note em, .detail-def em { font-style: italic; color: var(--ink); font-weight: 600; }
+  .recap-detail .said { text-align: left; }
+  .recap-detail .example { font-size: 0.95rem; }
+  .recap .mark { flex: none; width: 1.3em; font-weight: 700; text-align: center; }
+  .recap .mark.hit { color: var(--genuine); }
+  .recap .mark.miss { color: var(--fabricated); }
+  .recap .w { font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; overflow-wrap: anywhere; }
+  .recap .t {
+    margin-left: auto; flex: none;
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 999px;
+  }
+  .recap .t.right { color: var(--genuine); background: var(--genuine-soft); }
+  .recap .t.wrong { color: var(--fabricated); background: var(--fabricated-soft); }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .best { font-size: 0.85rem; font-weight: 600; color: var(--muted); text-align: center; }
+
+  .levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .levels button { min-height: 48px; font-size: 0.95rem; }
+  .levels button[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) { .levels button[aria-pressed="true"] { color: #0e1016; } }
+  .level-note { margin: -8px 0 0; text-align: center; font-size: 0.9rem; color: var(--muted); }
+
+  .voices { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .voices-label, .voices-hint { font-size: 0.8rem; color: var(--muted); }
+  .voices-label { font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  .voice-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+  .chip {
+    min-height: 40px;
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 999px;
+  }
+  .chip[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) { .chip[aria-pressed="true"] { color: #0e1016; } }
+  .chip.playing { animation: sound 1.1s ease-in-out infinite; }
+
+  .rules { margin: 0; padding-left: 1.2em; color: var(--ink-soft); display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; }
+  .rules li::marker { color: var(--accent); font-weight: 700; }
+  .rules strong { color: var(--ink); font-weight: 700; }
+  footer { color: var(--muted); font-size: 0.85rem; text-align: center; }
+  .hidden { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1 class="wordmark"><span class="mark">Acro</span>numbskull</h1>
+    <p class="tagline">Ten acronyms. Some of them are fake.</p>
+  </header>
+
+  <!-- ===== START ===== -->
+  <section id="start" class="card">
+    <ol class="rules">
+      <li>You get ten acronyms, each with what it supposedly stands for.</li>
+      <li>Some of them are <strong>real</strong>. The rest were <strong>made up</strong> — the letters stand for nothing and nobody uses them. How many of each changes every game, so counting won't help you.</li>
+      <li>Decide on each one. One point for every one you get right.</li>
+    </ol>
+    <div class="levels" role="group" aria-label="Difficulty">
+      <button class="level" id="lvl-1" data-level="1">Easy</button>
+      <button class="level" id="lvl-2" data-level="2">Tricky</button>
+      <button class="level" id="lvl-3" data-level="3">Fiendish</button>
+    </div>
+    <p class="level-note" id="level-note"></p>
+
+    <div class="voices" id="voices">
+      <span class="voices-label">Voice</span>
+      <div class="voice-chips" role="group" aria-label="Reading voice">
+        <button class="chip" id="voice-emma" data-voice="emma">Emma</button>
+        <button class="chip" id="voice-isabella" data-voice="isabella">Isabella</button>
+        <button class="chip" id="voice-alice" data-voice="alice">Alice</button>
+        <button class="chip" id="voice-lily" data-voice="lily">Lily</button>
+      </div>
+      <span class="voices-hint">Tap to hear an acronym</span>
+    </div>
+
+    <button id="btn-start" class="primary">Deal me ten</button>
+    <div id="best-line" class="best"></div>
+  </section>
+
+  <!-- ===== GAME ===== -->
+  <section id="game" class="card hidden">
+    <div class="progress">
+      <div class="track" id="track" role="img" aria-label="Progress through the ten acronyms"></div>
+      <div class="meta">
+        <span id="counter">Acronym 1 of 10</span>
+        <span id="tally">0 correct</span>
+      </div>
+    </div>
+
+    <div class="entry">
+      <h2 class="headword" id="acronym"></h2>
+      <div class="entry-meta">
+        <span class="field" id="field"></span>
+        <button class="speak" id="btn-speak" type="button" aria-label="Hear the acronym spoken" title="Hear the acronym spoken">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M4 9.5v5h3.4L12 18.5v-13L7.4 9.5H4z" fill="currentColor" />
+            <path d="M15.8 8.8a4.6 4.6 0 0 1 0 6.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            <path d="M18.6 6.2a8.4 8.4 0 0 1 0 11.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      <p class="def" id="def"></p>
+    </div>
+
+    <div id="controls">
+      <div class="choices">
+        <button class="yes" id="btn-real">Real</button>
+        <button class="no" id="btn-fake">Fake</button>
+      </div>
+      <p class="keys" style="margin:12px 0 0"><kbd>&larr;</kbd> real &nbsp;&middot;&nbsp; <kbd>&rarr;</kbd> fake &nbsp;&middot;&nbsp; <kbd>S</kbd> hear it</p>
+    </div>
+
+    <div class="verdict hidden" id="verdict" role="status" aria-live="polite">
+      <p class="ruling" id="ruling">
+        <span class="icon"><span class="glyph" id="ruling-icon"></span></span>
+        <span id="ruling-text"></span>
+      </p>
+      <span class="truth" id="truth"></span>
+      <span class="said hidden" id="said"></span>
+      <p class="note" id="note"></p>
+      <p class="example hidden" id="example"></p>
+      <button class="primary" id="btn-next">Next</button>
+    </div>
+
+    <div class="nav hidden" id="nav">
+      <button id="btn-back">&larr; Back</button>
+      <button id="btn-forward">Forward &rarr;</button>
+    </div>
+  </section>
+
+  <!-- ===== RESULTS ===== -->
+  <section id="results" class="card hidden">
+    <div>
+      <div class="score"><span id="final"></span><span class="of">/10</span></div>
+      <div class="rank" id="rank"></div>
+    </div>
+    <p class="blurb" id="blurb"></p>
+    <p class="split" id="split"></p>
+    <ul class="recap" id="recap"></ul>
+    <div class="row">
+      <button id="btn-again" class="primary">Play again</button>
+      <button id="btn-share">Copy result</button>
+    </div>
+    <div id="best-line-2" class="best"></div>
+  </section>
+
+  <footer>For people who suspect the initials are bluffing</footer>
+</div>
+
+<script src="acronyms.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var ROUND_LEN = 10;   // acronyms per game
+  var STORE_BESTS = "acronumbskull.bests";        // { level: score }
+  var STORE_BEST_LEGACY = "acronumbskull.best";   // a single score, from before levels existed
+  var STORE_LEVEL = "acronumbskull.level";
+  var STORE_VOICE = "acronumbskull.voice";
+  var STORE_SEEN = "acronumbskull.seen";
+
+  var LEVELS = {
+    1: { name: "Easy",     note: "Acronyms you meet every week, against inventions with a tell in them." },
+    2: { name: "Tricky",   note: "Acronyms you half-know, against inventions built to survive a second look." },
+    3: { name: "Fiendish", note: "The most obscure acronyms in the bank, against inventions made to be indistinguishable." }
+  };
+
+  var el = function (id) { return document.getElementById(id); };
+  var level = 2;
+  var deck = [];      // the ten acronyms for this game
+  var index = 0;      // how far the game has progressed
+  var view = 0;       // which acronym is on screen (trails `index` while reviewing)
+  var score = 0;
+  var answered = false;   // has the acronym currently on screen been answered?
+  var log = [];       // { w, say, real, guess, correct }
+
+  /* ---------- storage (a blocked localStorage must never break the game) ---------- */
+  function read(key, fallback) {
+    try {
+      var v = localStorage.getItem(key);
+      return v === null ? fallback : JSON.parse(v);
+    } catch (e) { return fallback; }
+  }
+  function write(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* ignore */ }
+  }
+
+  /* ---------- building the deck ---------- */
+  function shuffle(list) {
+    var a = list.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  // Prefer entries the player hasn't seen recently; forget a pool's history once it runs dry.
+  function draw(pool, count, seen) {
+    if (count === 0) return [];
+    var fresh = pool.filter(function (item) { return seen.indexOf(item.w) === -1; });
+    if (fresh.length < count) {
+      pool.forEach(function (item) {
+        var at = seen.indexOf(item.w);
+        if (at !== -1) seen.splice(at, 1);
+      });
+      fresh = pool.slice();
+    }
+    return shuffle(fresh).slice(0, count);
+  }
+
+  function tag(entry, isReal) {
+    // `ex` is only present on real acronyms — that is what gates the example sentence.
+    return { w: entry.w, say: entry.say, cat: entry.cat, def: entry.def, note: entry.note, ex: entry.ex, real: isReal };
+  }
+
+  // Every card flips its own coin, so the real/fake count is genuinely random —
+  // there is no split to count down against. Both pools are capped by their size.
+  function realCountForRound(realsAvailable, fakesAvailable) {
+    var n = 0;
+    for (var i = 0; i < ROUND_LEN; i++) if (Math.random() < 0.5) n++;
+    return Math.min(Math.max(n, ROUND_LEN - fakesAvailable), realsAvailable);
+  }
+
+  function atLevel(pool) {
+    return pool.filter(function (x) { return x.lvl === level; });
+  }
+
+  function buildDeck() {
+    var seen = read(STORE_SEEN, []);
+    var realPool = atLevel(REAL_ACRONYMS);
+    var fakePool = atLevel(FAKE_ACRONYMS);
+    var realCount = realCountForRound(realPool.length, fakePool.length);
+    var reals = draw(realPool, realCount, seen).map(function (x) { return tag(x, true); });
+    var fakes = draw(fakePool, ROUND_LEN - realCount, seen).map(function (x) { return tag(x, false); });
+    var picked = shuffle(reals.concat(fakes));
+    write(STORE_SEEN, seen.concat(picked.map(function (x) { return x.w; })));
+    return picked;
+  }
+
+  /* ---------- saying the acronym out loud ---------- */
+  // The game ships its own recordings: device speech synthesis sounds robotic on
+  // most phones, and iOS ships compact voices by default. Files are rendered by
+  // tools/make-audio.py. Synthesis stays on as a fallback for anything missing.
+  var AUDIO_DIR = "audio/";
+  var VOICE_NAMES = ["emma", "isabella", "alice", "lily"];
+  var SAMPLE_ACRONYM = "scuba";          // what a voice chip says when you tap it
+  var canPlayFiles = (typeof Audio === "function");
+  var voiceName = "emma";
+  var clip = null;
+  var sample = null;
+  // Voice lists differ wildly by device, so aim for en-GB and work down a list of
+  // the good British voices that actually ship on common platforms.
+  var speech = window.speechSynthesis || null;
+  var voice = null;
+  // British and female where the device has one. Voices carry no gender field, so
+  // this goes by the names the major platforms actually ship.
+  var FEMALE_BRITISH = [
+    "Google UK English Female",                                  // Android, Chrome
+    "Serena", "Kate", "Stephanie", "Martha", "Jamie",             // Apple en-GB
+    "Sonia", "Libby", "Hazel", "Susan", "Maisie", "Abbi", "Bella" // Microsoft en-GB
+  ];
+  var MALE_NAMES = /daniel|oliver|arthur|ryan|thomas|george|malcolm|male|alex|fred|gordon/i;
+
+  function pickVoice() {
+    if (!speech || !speech.getVoices) return null;
+    var voices = speech.getVoices() || [];
+    var british = voices.filter(function (v) { return /^en[-_]GB/i.test(v.lang || ""); });
+
+    for (var i = 0; i < FEMALE_BRITISH.length; i++) {
+      var named = british.filter(function (v) { return v.name.indexOf(FEMALE_BRITISH[i]) !== -1; })[0];
+      if (named) return named;
+    }
+    // No name we recognise: take a British voice that isn't obviously male…
+    var unnamed = british.filter(function (v) { return !MALE_NAMES.test(v.name); })[0];
+    if (unnamed) return unnamed;
+    // …then any British voice, and failing that leave it unset so the device
+    // falls back to whichever voice the owner has chosen in their settings.
+    return british[0] || null;
+  }
+
+  function markSpeaking(on) {
+    el("btn-speak").classList.toggle("speaking", on);
+  }
+
+  // Load (but don't play) the clip for the acronym on screen, so the first tap
+  // is instant. The file is named for the acronym itself; `say` is only for the
+  // synthesised fallback, which needs the letters spaced out to read them.
+  function loadClip(name) {
+    if (!canPlayFiles) return null;
+    var a = new Audio(AUDIO_DIR + voiceName + "/" + name + ".mp3");
+    a.preload = "auto";
+    return a;
+  }
+
+  // Choosing a voice plays an acronym in it, which is the only way to choose sensibly.
+  function setVoice(name, speak) {
+    voiceName = VOICE_NAMES.indexOf(name) === -1 ? "emma" : name;
+    write(STORE_VOICE, voiceName);
+    VOICE_NAMES.forEach(function (v) {
+      var chip = el("voice-" + v);
+      chip.setAttribute("aria-pressed", v === voiceName ? "true" : "false");
+      chip.classList.remove("playing");
+    });
+    if (deck.length) clip = loadClip(deck[view].w);   // mid-game changes take effect at once
+    if (!speak || !canPlayFiles) return;
+
+    if (sample) { try { sample.pause(); } catch (e) { /* nothing playing */ } }
+    var chip = el("voice-" + voiceName);
+    sample = new Audio(AUDIO_DIR + voiceName + "/" + SAMPLE_ACRONYM + ".mp3");
+    chip.classList.add("playing");
+    var done = function () { chip.classList.remove("playing"); };
+    sample.onended = sample.onerror = done;
+    var playing = sample.play();
+    if (playing && playing.catch) playing.catch(done);
+  }
+
+  // Play one on demand — used by the recap, where nothing is preloaded.
+  function playClip(name, spoken, btn) {
+    var lit = function (on) { if (btn) btn.classList.toggle("speaking", on); };
+    var fallback = function () { lit(false); speakSynthesised(spoken); };
+    if (!canPlayFiles) { fallback(); return; }
+    var a = new Audio(AUDIO_DIR + voiceName + "/" + name + ".mp3");
+    a.onended = function () { lit(false); };
+    a.onerror = fallback;
+    lit(true);
+    var playing = a.play();
+    if (playing && playing.catch) playing.catch(fallback);
+  }
+
+  function speakAcronym() {
+    if (clip) {
+      var failed = function () { markSpeaking(false); clip = null; speakSynthesised(deck[view].say); };
+      try {
+        clip.currentTime = 0;
+        clip.onended = function () { markSpeaking(false); };
+        clip.onerror = failed;
+        var playing = clip.play();
+        markSpeaking(true);
+        if (playing && playing.catch) playing.catch(failed);
+        return;
+      } catch (e) { failed(); return; }
+    }
+    speakSynthesised(deck[view].say);
+  }
+
+  function speakSynthesised(spoken) {
+    if (!speech || !spoken) return;
+    try {
+      if (speech.speaking || speech.pending) speech.cancel();   // don't talk over ourselves
+      var u = new SpeechSynthesisUtterance(spoken);
+      if (!voice) voice = pickVoice();
+      if (voice) u.voice = voice;
+      u.lang = "en-GB";                    // steers the fallback voice too
+      u.rate = 0.85;                       // unfamiliar strings need the extra beat
+      u.onstart = function () { markSpeaking(true); };
+      u.onend = u.onerror = function () { markSpeaking(false); };
+      speech.speak(u);
+    } catch (e) { /* a device that won't speak simply stays quiet */ }
+  }
+
+  function setUpSpeech() {
+    // Only hide the button where neither recordings nor synthesis are possible.
+    if (!canPlayFiles && !speech) { el("btn-speak").hidden = true; return; }
+    if (!speech) return;
+    voice = pickVoice();
+    // Chrome populates the voice list asynchronously.
+    if (typeof speech.addEventListener === "function") {
+      speech.addEventListener("voiceschanged", function () { voice = pickVoice(); });
+    }
+  }
+
+  /* ---------- screens ---------- */
+  function show(name) {
+    ["start", "game", "results"].forEach(function (id) {
+      el(id).classList.toggle("hidden", id !== name);
+    });
+  }
+
+  function setLevel(n) {
+    level = LEVELS[n] ? n : 2;
+    write(STORE_LEVEL, level);
+    [1, 2, 3].forEach(function (i) {
+      el("lvl-" + i).setAttribute("aria-pressed", i === level ? "true" : "false");
+    });
+    el("level-note").textContent = LEVELS[level].note;
+    renderBest();
+  }
+
+  function renderBest() {
+    var bests = read(STORE_BESTS, {});
+    var best = bests[level];
+    var text;
+    if (best !== undefined) {
+      text = "Personal best at " + LEVELS[level].name + " — " + best + "/10";
+    } else {
+      // A score saved before the game had levels: keep showing it, but don't
+      // claim a level for it, because we genuinely don't know which it was.
+      var legacy = read(STORE_BEST_LEGACY, null);
+      text = legacy === null ? "" : "Earlier best " + legacy + "/10";
+    }
+    el("best-line").textContent = text;
+    el("best-line-2").textContent = text;
+  }
+
+  function renderProgress() {
+    var html = "";
+    for (var i = 0; i < ROUND_LEN; i++) {
+      var cls = "seg";
+      if (i < log.length) cls += log[i].correct ? " hit" : " miss";
+      else if (i === index) cls += " now";
+      if (i === view) cls += " viewing";
+      html += '<span class="' + cls + '"></span>';
+    }
+    el("track").innerHTML = html;
+    el("counter").textContent = "Acronym " + (view + 1) + " of " + ROUND_LEN + (view < index ? " \u00b7 reviewing" : "");
+    el("tally").textContent = score + " correct";
+  }
+
+  function renderNav() {
+    el("nav").classList.toggle("hidden", index === 0);
+    el("btn-back").disabled = (view === 0);
+    el("btn-forward").disabled = (view >= index);
+  }
+
+  // Draws whichever card `i` points at — the live one, or an earlier one being reviewed.
+  function renderAt(i) {
+    if (speech && (speech.speaking || speech.pending)) speech.cancel();
+    if (clip) { try { clip.pause(); } catch (e) { /* nothing playing */ } }
+    markSpeaking(false);
+    view = i;
+    var card = deck[i];
+    var past = log[i];
+    var reviewing = (i < index);
+    answered = !!past;
+
+    el("acronym").textContent = card.w;
+    el("field").textContent = card.cat;
+    el("def").textContent = card.def;
+    clip = loadClip(card.w);
+
+    if (past) {
+      el("ruling").className = "ruling " + (past.correct ? "right" : "wrong");
+      el("ruling-icon").innerHTML = past.correct ? "&#10003;" : "&#10007;";
+      el("ruling-text").textContent = past.correct ? "Correct" : "Wrong";
+      el("truth").className = "truth " + (past.correct ? "right" : "wrong");
+      el("truth").textContent = past.real ? "Real acronym" : "Fake acronym";
+      el("note").innerHTML = card.note;
+      // Only real acronyms have a usage example; inventions have nothing to illustrate.
+      el("example").innerHTML = card.ex ? "&ldquo;" + card.ex + "&rdquo;" : "";
+      el("example").classList.toggle("hidden", !card.ex);
+      el("said").textContent = "You answered " + (past.guess ? "Real" : "Fake");
+      el("said").classList.toggle("hidden", !reviewing);
+      el("btn-next").textContent = (index === ROUND_LEN - 1) ? "See your score" : "Next";
+      el("btn-next").classList.toggle("hidden", reviewing);
+      el("controls").classList.add("hidden");
+      el("verdict").classList.remove("hidden");
+      if (!reviewing) el("btn-next").focus();
+    } else {
+      el("btn-real").disabled = false;
+      el("btn-fake").disabled = false;
+      el("controls").classList.remove("hidden");
+      el("verdict").classList.add("hidden");
+    }
+
+    renderNav();
+    renderProgress();
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- ruling on an acronym ---------- */
+  function answer(saidReal) {
+    if (answered || view !== index) return;
+
+    var card = deck[index];
+    var correct = (saidReal === card.real);
+    if (correct) score++;
+    log.push({ w: card.w, say: card.say, real: card.real, guess: saidReal, correct: correct });
+    renderAt(index);
+  }
+
+  function next() {
+    index++;
+    if (index >= ROUND_LEN) finish();
+    else renderAt(index);
+  }
+
+  /* ---------- results ---------- */
+  var RANKS = [
+    { min: 10, title: "Acronymist",        blurb: "A perfect ten. The initials work for you now." },
+    { min: 9,  title: "Committee chair",   blurb: "One slip in ten. Frankly suspicious." },
+    { min: 7,  title: "Cipher clerk",      blurb: "You can smell a made-up expansion at twenty paces." },
+    { min: 5,  title: "Educated guesser",  blurb: "Better than a coin, which is more than most manage." },
+    { min: 3,  title: "Cheerfully conned", blurb: "The inventions got you. They were built to." },
+    { min: 0,  title: "Acronumbskull",     blurb: "Every con needs one. Go again — you'll learn the tells." }
+  ];
+
+  function finish() {
+    var bests = read(STORE_BESTS, {});
+    if (bests[level] === undefined || score > bests[level]) {
+      bests[level] = score;
+      write(STORE_BESTS, bests);
+    }
+
+    var rank = RANKS.filter(function (r) { return score >= r.min; })[0];
+    var reals = log.filter(function (r) { return r.real; }).length;
+
+    el("final").textContent = score;
+    el("rank").textContent = rank.title;
+    el("blurb").textContent = rank.blurb;
+    el("split").textContent = LEVELS[level].name + " — this round held " + reals + " real " +
+                              (reals === 1 ? "acronym" : "acronyms") + " and " + (ROUND_LEN - reals) + " fake.";
+
+    el("recap").innerHTML = log.map(function (r, i) {
+      var card = deck[i];
+      return '<li>' +
+        '<button type="button" class="recap-row" id="recap-row-' + i + '" aria-expanded="false" aria-controls="recap-detail-' + i + '">' +
+          '<span class="mark ' + (r.correct ? "hit" : "miss") + '">' + (r.correct ? "&#10003;" : "&#10007;") + '</span>' +
+          '<span class="w">' + r.w + '</span>' +
+          '<span class="t ' + (r.correct ? "right" : "wrong") + '">' + (r.real ? "real" : "fake") + '</span>' +
+          '<span class="chev" aria-hidden="true">&#9662;</span>' +
+        '</button>' +
+        '<div class="recap-detail hidden" id="recap-detail-' + i + '">' +
+          '<div class="detail-head">' +
+            '<span class="field">' + card.cat + '</span>' +
+            '<button type="button" class="speak" id="recap-speak-' + i + '" aria-label="Hear ' + r.w + '">' +
+              '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+                '<path d="M4 9.5v5h3.4L12 18.5v-13L7.4 9.5H4z" fill="currentColor" />' +
+                '<path d="M15.8 8.8a4.6 4.6 0 0 1 0 6.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />' +
+                '<path d="M18.6 6.2a8.4 8.4 0 0 1 0 11.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />' +
+              '</svg>' +
+            '</button>' +
+          '</div>' +
+          '<p class="detail-def">' + card.def + '</p>' +
+          '<p class="detail-note">' + card.note + '</p>' +
+          (card.ex ? '<p class="example">&ldquo;' + card.ex + '&rdquo;</p>' : '') +
+          '<p class="said">You answered ' + (r.guess ? "Real" : "Fake") + '</p>' +
+        '</div>' +
+      '</li>';
+    }).join("");
+
+    // One row open at a time keeps the list navigable on a phone.
+    log.forEach(function (r, i) {
+      // State lives in JS, not just in the markup, so a second game starts clean.
+      el("recap-row-" + i).setAttribute("aria-expanded", "false");
+      el("recap-detail-" + i).classList.add("hidden");
+      el("recap-row-" + i).addEventListener("click", function () { toggleDetail(i); });
+      el("recap-speak-" + i).addEventListener("click", function (e) {
+        e.stopPropagation();
+        playClip(r.w, r.say, el("recap-speak-" + i));
+      });
+    });
+    openDetail = -1;
+
+    renderBest();
+    show("results");
+    window.scrollTo(0, 0);
+  }
+
+  var openDetail = -1;
+
+  function toggleDetail(i) {
+    var opening = (openDetail !== i);
+    if (openDetail !== -1) {
+      el("recap-detail-" + openDetail).classList.add("hidden");
+      el("recap-row-" + openDetail).setAttribute("aria-expanded", "false");
+    }
+    if (opening) {
+      el("recap-detail-" + i).classList.remove("hidden");
+      el("recap-row-" + i).setAttribute("aria-expanded", "true");
+    }
+    openDetail = opening ? i : -1;
+  }
+
+  function shareText() {
+    var grid = log.map(function (r) { return r.correct ? "🟩" : "🟥"; }).join("");
+    var text = "Acronumbskull (" + LEVELS[level].name + ") " + score + "/10\n" + grid +
+               "\nCan you spot the fakes?";
+    // Only worth attaching a link when the page came from somewhere shareable.
+    if (typeof location !== "undefined" && /^https?:$/.test(location.protocol)) {
+      text += "\n" + location.origin + location.pathname;
+    }
+    return text;
+  }
+
+  function copyResult() {
+    var text = shareText();
+    var done = function () {
+      el("btn-share").textContent = "Copied";
+      setTimeout(function () { el("btn-share").textContent = "Copy result"; }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { window.prompt("Copy your result:", text); });
+    } else {
+      window.prompt("Copy your result:", text);
+    }
+  }
+
+  /* ---------- wiring ---------- */
+  function startGame() {
+    deck = buildDeck();
+    index = 0;
+    score = 0;
+    log = [];
+    show("game");
+    renderAt(0);
+  }
+
+  el("btn-start").addEventListener("click", startGame);
+  el("btn-again").addEventListener("click", function () { show("start"); window.scrollTo(0, 0); });
+  el("btn-share").addEventListener("click", copyResult);
+  el("btn-real").addEventListener("click", function () { answer(true); });
+  el("btn-fake").addEventListener("click", function () { answer(false); });
+  el("btn-next").addEventListener("click", next);
+  el("btn-speak").addEventListener("click", speakAcronym);
+  el("btn-back").addEventListener("click", function () { if (view > 0) renderAt(view - 1); });
+  el("btn-forward").addEventListener("click", function () { if (view < index) renderAt(view + 1); });
+
+  document.addEventListener("keydown", function (e) {
+    var playing = !el("game").classList.contains("hidden");
+    if (!playing) {
+      if (e.key === "Enter" && !el("start").classList.contains("hidden")) startGame();
+      return;
+    }
+    if (e.key === "s" || e.key === "S") { e.preventDefault(); speakAcronym(); return; }
+    if (!answered) {
+      if (e.key === "ArrowLeft"  || e.key === "r" || e.key === "R") { e.preventDefault(); answer(true); }
+      if (e.key === "ArrowRight" || e.key === "f" || e.key === "F") { e.preventDefault(); answer(false); }
+      return;
+    }
+    // Once a card is answered, the arrows steer the history instead.
+    if (e.key === "ArrowLeft") { e.preventDefault(); if (view > 0) renderAt(view - 1); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); if (view < index) renderAt(view + 1); else next(); }
+    else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (view < index) renderAt(index); else next(); }
+  });
+
+  [1, 2, 3].forEach(function (i) {
+    el("lvl-" + i).addEventListener("click", function () { setLevel(i); });
+  });
+  VOICE_NAMES.forEach(function (v) {
+    el("voice-" + v).addEventListener("click", function () { setVoice(v, true); });
+  });
+  setVoice(read(STORE_VOICE, "emma"), false);
+  setLevel(read(STORE_LEVEL, 2));
+  setUpSpeech();
+  renderBest();
+})();
+</script>
+</body>
+</html>
