@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Acronumbskull</title>
-<meta name="description" content="Ten acronyms and what they supposedly stand for. Some are genuine. The rest were made up. Can you tell which is which?" />
+<meta name="description" content="Ten genuine acronyms and what they supposedly stand for. Some of the expansions are the real ones. The rest were made up. Can you tell which is which?" />
 <meta name="color-scheme" content="light dark" />
 <meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#0e1016" media="(prefers-color-scheme: dark)" />
@@ -392,14 +392,14 @@
 
   <header>
     <h1 class="wordmark"><span class="mark">Acro</span>numbskull</h1>
-    <p class="tagline">Ten acronyms. Some of them are fake.</p>
+    <p class="tagline">Ten real acronyms. Some of the meanings are fake.</p>
   </header>
 
   <!-- ===== START ===== -->
   <section id="start" class="card">
     <ol class="rules">
-      <li>You get ten acronyms, each with what it supposedly stands for.</li>
-      <li>Some of them are <strong>real</strong>. The rest were <strong>made up</strong> — the letters stand for nothing and nobody uses them. How many of each changes every game, so counting won't help you.</li>
+      <li>You get ten acronyms. Every one of them is genuine &mdash; what you are judging is the meaning underneath it.</li>
+      <li>Some of those meanings are <strong>real</strong>. The rest were <strong>made up</strong> &mdash; they spell out the same letters and sound about right, but they are not what it stands for. How many of each changes every game, so counting won't help you.</li>
       <li>Decide on each one. One point for every one you get right.</li>
     </ol>
     <div class="levels" role="group" aria-label="Difficulty">
@@ -507,9 +507,9 @@
   var STORE_SEEN = "acronumbskull.seen";
 
   var LEVELS = {
-    1: { name: "Easy",     note: "Acronyms you meet every week, against inventions with a tell in them." },
-    2: { name: "Tricky",   note: "Acronyms you half-know, against inventions built to survive a second look." },
-    3: { name: "Fiendish", note: "The most obscure acronyms in the bank, against inventions made to be indistinguishable." }
+    1: { name: "Easy",     note: "Acronyms you meet every week, and the meanings everybody half-remembers wrong." },
+    2: { name: "Tricky",   note: "Acronyms you half-know, against invented meanings built to survive a second look." },
+    3: { name: "Fiendish", note: "The most obscure acronyms in the bank, against meanings made to be indistinguishable." }
   };
 
   var el = function (id) { return document.getElementById(id); };
@@ -791,7 +791,7 @@
       el("ruling-icon").innerHTML = past.correct ? "&#10003;" : "&#10007;";
       el("ruling-text").textContent = past.correct ? "Correct" : "Wrong";
       el("truth").className = "truth " + (past.correct ? "right" : "wrong");
-      el("truth").textContent = past.real ? "Real acronym" : "Fake acronym";
+      el("truth").textContent = past.real ? "Real meaning" : "Fake meaning";
       el("note").innerHTML = card.note;
       // Only real acronyms have a usage example; inventions have nothing to illustrate.
       el("example").innerHTML = card.ex ? "&ldquo;" + card.ex + "&rdquo;" : "";
@@ -856,7 +856,7 @@
     el("rank").textContent = rank.title;
     el("blurb").textContent = rank.blurb;
     el("split").textContent = LEVELS[level].name + " — this round held " + reals + " real " +
-                              (reals === 1 ? "acronym" : "acronyms") + " and " + (ROUND_LEN - reals) + " fake.";
+                              (reals === 1 ? "meaning" : "meanings") + " and " + (ROUND_LEN - reals) + " fake.";
 
     el("recap").innerHTML = log.map(function (r, i) {
       var card = deck[i];

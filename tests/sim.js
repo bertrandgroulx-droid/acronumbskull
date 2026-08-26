@@ -40,13 +40,13 @@ function playGame(strategy){
     seen[i].ruling = els['ruling-text'].textContent;
     const said = strategyReal;
     const expectRuling = (said === isReal) ? 'Correct' : 'Wrong';
-    const expectTruth  = isReal ? 'Real acronym' : 'Fake acronym';
+    const expectTruth  = isReal ? 'Real meaning' : 'Fake meaning';
     if (els['ruling-text'].textContent !== expectRuling) throw new Error('ruling said "'+els['ruling-text'].textContent+'", expected '+expectRuling+' on '+w);
     if (els['truth'].textContent !== expectTruth) throw new Error('truth said "'+els['truth'].textContent+'", expected '+expectTruth+' on '+w);
     if (!els['ruling-icon'].innerHTML || !els['note'].innerHTML) throw new Error('incomplete reveal for '+w);
     // real words must show a usage example; fakes must not
     const exShown = !els['example'].classList.contains('hidden') && !!els['example'].innerHTML;
-    if (isReal && !exShown) throw new Error('real acronym "'+w+'" showed no example sentence');
+    if (isReal && !exShown) throw new Error('real expansion "'+w+'" showed no example sentence');
     if (!isReal && exShown) throw new Error('invented acronym "'+w+'" showed an example sentence');
     if (isReal && !els['example'].innerHTML.includes('<em>')) throw new Error('example for "'+w+'" lost its emphasis markup');
     els['btn-next'].handlers.click();

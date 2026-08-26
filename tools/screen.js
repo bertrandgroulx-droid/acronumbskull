@@ -1,26 +1,29 @@
 #!/usr/bin/env node
-/* Screen candidate acronyms BEFORE writing expansions for them.
+/* Screen a candidate acronym BEFORE writing a false expansion for it.
  *
- * Rule 1 of the recipe: verify the invented ones too. With words the danger is
- * that an invention turns out to be a real word. With acronyms it is worse —
- * almost every short letter string stands for *something*, so the question is
- * not "does this string exist" but "does the meaning I am about to invent
- * collide with a meaning it already has".
+ * Every acronym in this game is genuine; what gets invented is the expansion.
+ * That makes rule 1 of the recipe — verify the invented ones too — a question
+ * about meanings rather than strings: almost every short letter string stands
+ * for several things, and if the expansion you are about to invent is one of
+ * them, you have written a real entry into the fake array and a player who
+ * knows it will be marked wrong for being right.
  *
  * So this prints, for each candidate, everything the reference list already
- * knows it stands for. Read them. If your intended expansion is one of them,
- * or close enough that a knowledgeable player would call it real, drop the
- * candidate. Anything the list does not know still needs a web check before it
- * earns an expansion — the list holds a few thousand acronyms, not all of them.
+ * knows it stands for. Read them before you write anything. Drop the pairing if
+ * your intended expansion is one of them, or close enough that a knowledgeable
+ * player would call it real; an acronym meaning something else entirely is
+ * exactly what you want. Anything the list does not know still needs a web
+ * check — the list holds a few thousand acronyms, not all of them, and the
+ * check that matters is "is this already what it stands for anywhere".
  *
  *   curl -sL -o acronyms-ref.csv \
  *     https://raw.githubusercontent.com/krishnakt031990/Crawl-Wiki-For-Acronyms/master/AcronymsFile.csv
  *   curl -sL -o words.txt https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt
  *   tr -d '\r' < words.txt > dict.txt
- *   node tools/screen.js --ref acronyms-ref.csv --dict dict.txt SNARK PLOD KESTREL
+ *   node tools/screen.js --ref acronyms-ref.csv --dict dict.txt NASA GCHQ TACAMO
  *
- * With no candidates on the command line it screens every invented acronym
- * already in the bank, which is the check to run before a release.
+ * With no candidates on the command line it screens every acronym in the fake
+ * half of the bank, which is the check to run before a release.
  */
 const fs = require('fs');
 const path = require('path');

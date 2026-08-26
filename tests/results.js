@@ -55,7 +55,7 @@ seen.forEach((s, i) => {
   const entry = byWord.get(s.w);
   ok(detailHtml.includes(entry.def), `expansion for "${s.w}" missing from the recap`);
   ok(detailHtml.includes(entry.note), `note for "${s.w}" missing from the recap`);
-  if (entry.ex) ok(detailHtml.includes(entry.ex), `example for real acronym "${s.w}" missing`);
+  if (entry.ex) ok(detailHtml.includes(entry.ex), `example for real expansion "${s.w}" missing`);
   ok(detailHtml.includes('You answered ' + (s.guessedReal ? 'Real' : 'Fake')),
      `the answer given for "${s.w}" should be shown`);
 });
