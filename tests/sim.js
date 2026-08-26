@@ -40,7 +40,7 @@ function playGame(strategy){
     seen[i].ruling = els['ruling-text'].textContent;
     const said = strategyReal;
     const expectRuling = (said === isReal) ? 'Correct' : 'Wrong';
-    const expectTruth  = isReal ? 'Real meaning' : 'Fake meaning';
+    const expectTruth  = isReal ? 'Real' : 'Fake';
     if (els['ruling-text'].textContent !== expectRuling) throw new Error('ruling said "'+els['ruling-text'].textContent+'", expected '+expectRuling+' on '+w);
     if (els['truth'].textContent !== expectTruth) throw new Error('truth said "'+els['truth'].textContent+'", expected '+expectTruth+' on '+w);
     if (!els['ruling-icon'].innerHTML || !els['note'].innerHTML) throw new Error('incomplete reveal for '+w);

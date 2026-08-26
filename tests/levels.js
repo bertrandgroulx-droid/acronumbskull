@@ -37,7 +37,7 @@ const ok = (c, m) => { if (!c) throw new Error('FAIL: ' + m); };
       ok(lvlOf.get(w) === level, `"${w}" is level ${lvlOf.get(w)} but was dealt at ${name}`);
       seen.add(w);
       els['btn-real'].handlers.click();
-      if (els['truth'].textContent === 'Real meaning') reals++;
+      if (els['truth'].textContent === 'Real') reals++;
       els['btn-next'].handlers.click();
     }
     realCounts.add(reals);

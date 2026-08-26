@@ -3,11 +3,18 @@
  * Every entry: { w: the acronym, say: how to read it aloud, cat: field it belongs to,
  *                def: what it stands for, note: shown after the guess, lvl: difficulty }
  *
- * Every acronym in here is genuine. What the player judges is the expansion.
- * REAL entries carry the expansion the acronym actually has.
- * FAKE entries carry an invented expansion — one that spells the same letters and
- * sounds like the sort of thing it ought to mean, but is not what it stands for.
- * The note on a fake gives the true expansion away.
+ * What the player judges is the card as a whole: does this acronym stand for that?
+ *
+ * REAL entries are genuine acronyms with the expansion they actually have.
+ * FAKE entries come in two kinds, and the player cannot tell which they are looking
+ * at until the answer:
+ *   - borrowed: a genuine acronym under an invented expansion. NASA is real; the
+ *     National Aeronautics and Space *Agency* is not.
+ *   - coined (`coined: true`): the acronym itself does not exist either. Nobody has
+ *     ever issued a QRB or filed an HVPT.
+ * Either way the note says what is wrong with the card — the true expansion for a
+ * borrowed one, what those letters really do stand for (if anything) for a coined one.
+ *
  * Real entries also carry `ex` — a sentence using the acronym. Fake ones must not,
  * because the example is what makes the example appear.
  *
@@ -144,7 +151,7 @@ const REAL_ACRONYMS = [
 
 
 const FAKE_ACRONYMS = [
-  /* ---------- level 1: acronyms everybody thinks they know ---------- */
+  /* ---------- level 1: real acronyms, invented meanings ---------- */
   { w: "gps", say: "G P S", cat: "transport", def: "global positioning satellite", note: "Fake. GPS stands for Global Positioning System. The satellites are the hardware; the system is the thing you are using.", lvl: 1 },
   { w: "url", say: "U R L", cat: "computing", def: "universal resource locator", note: "Fake. URL stands for Uniform Resource Locator. Uniform because every scheme — http, ftp, mailto — has to be written the same way.", lvl: 1 },
   { w: "dns", say: "D N S", cat: "computing", def: "domain naming service", note: "Fake. DNS stands for Domain Name System. A system, not a service: the name resolution is distributed across the whole internet.", lvl: 1 },
@@ -182,7 +189,27 @@ const FAKE_ACRONYMS = [
   { w: "hazmat", say: "hazmat", cat: "policing", def: "hazard mitigation assessment team", note: "Fake. HAZMAT stands for hazardous materials, and nothing else. The label on the tanker is a warning, not a team.", lvl: 1 },
   { w: "nascar", say: "nascar", cat: "business", def: "National Association of Stock Car Racing", note: "Fake. NASCAR stands for National Association for Stock Car Auto Racing — <em>auto racing</em>. The full name is a mouthful, which is why nobody ever says it.", lvl: 1 },
   { w: "scotus", say: "scotus", cat: "government", def: "Senior Court of the United States", note: "Fake. SCOTUS stands for Supreme Court of the United States — <em>supreme</em>. The initialism was a telegraph shorthand long before it was a headline word.", lvl: 1 },
-  /* ---------- level 2: expansions that survive a second look ---------- */
+  /* ---------- level 1: invented acronyms, invented meanings ---------- */
+  { w: "rhc", say: "R H C", cat: "medicine", def: "reflex health check", note: "Fake. RHC is real in medicine, but for right heart catheterisation — a catheter through a vein into the heart, not a reflex test.", coined: true, lvl: 1 },
+  { w: "bcu", say: "B C U", cat: "medicine", def: "bone calcium uptake", note: "Fake. BCU is real twice over — a big close-up in a shooting script, and the British Canoe Union — but never a bone measurement.", coined: true, lvl: 1 },
+  { w: "hbd", say: "H B D", cat: "telecoms", def: "home broadband device", note: "Fake. The trade abbreviation for home broadband is HBB, which is close enough to be irritating.", coined: true, lvl: 1 },
+  { w: "tsi", say: "T S I", cat: "computing", def: "text service identifier", note: "Fake. TSI is real on the railways, for technical specifications for interoperability.", coined: true, lvl: 1 },
+  { w: "zmp", say: "Z M P", cat: "computing", def: "zoned memory paging", note: "Fake. Zoned namespaces are real, and this abbreviation for them is not.", coined: true, lvl: 1 },
+  { w: "kfl", say: "K F L", cat: "media", def: "keyframe layout", note: "Fake. KFL is a football league in Kerala and a language code in Cameroon, but never this.", coined: true, lvl: 1 },
+  { w: "qrb", say: "Q R B", cat: "transport", def: "quiet route bypass", note: "Fake. QRB is real as a quality review board, and as the radio Q code for \"what is your distance?\"", coined: true, lvl: 1 },
+  { w: "vgd", say: "V G D", cat: "engineering", def: "vapour gradient detector", note: "Fake. Vapour pressure gradients are real physics. This instrument is not.", coined: true, lvl: 1 },
+  { w: "hrq", say: "H R Q", cat: "government", def: "housing register quota", note: "Fake. Housing registers are real, and are not run on quotas with initials.", coined: true, lvl: 1 },
+  { w: "clip", say: "clip", cat: "policing", def: "Community Liaison and Incident Post", note: "Fake. CLIP is real in telephony, for calling line identification presentation: the thing that puts a number on your handset.", coined: true, lvl: 1 },
+  { w: "snip", say: "snip", cat: "government", def: "Standard Notice of Inspection Period", note: "Fake. Geneticists do say <em>snip</em>, but they spell it SNP — a single nucleotide polymorphism.", coined: true, lvl: 1 },
+  { w: "span", say: "span", cat: "engineering", def: "structural panel assessment note", note: "Fake. A span is the distance a beam crosses unsupported, and is a word rather than initials.", coined: true, lvl: 1 },
+  { w: "quay", say: "key", cat: "marine", def: "quality assurance for yards", note: "Fake. A quay is where a ship ties up, it is pronounced \"key\", and it stands for nothing.", coined: true, lvl: 1 },
+  { w: "swipe", say: "swipe", cat: "finance", def: "secure wireless payment entry", note: "Fake. The word came first and the expansion was fitted to it afterwards, which is usually the tell.", coined: true, lvl: 1 },
+  { w: "stile", say: "stile", cat: "transport", def: "site transit inspection level entry", note: "Fake. A stile is the steps that let you over a fence, and the turnstile is its descendant.", coined: true, lvl: 1 },
+  { w: "cobble", say: "cobble", cat: "engineering", def: "coastal bridge and bypass load evaluation", note: "Fake. Bridge load ratings are real and serious work, and they are recorded as numbers rather than as birds and stones.", coined: true, lvl: 1 },
+  { w: "tiller", say: "tiller", cat: "science", def: "tidal lock level and entry record", note: "Fake. A tiller steers a boat, and does nothing else at all.", coined: true, lvl: 1 },
+  { w: "ofpost", say: "off post", cat: "government", def: "Office of Postal Standards", note: "Fake. Britain has an Ofcom, an Ofgem and an Ofwat, but the post is regulated by Ofcom too.", coined: true, lvl: 1 },
+  { w: "pantile", say: "pan tile", cat: "aviation", def: "panel terminal information and log equipment", note: "Fake. A pantile is an S-shaped roof tile, and has been since the seventeenth century.", coined: true, lvl: 1 },
+  /* ---------- level 2: real acronyms, invented meanings ---------- */
   { w: "sad", say: "sad", cat: "medicine", def: "seasonal anxiety disorder", note: "Fake. SAD stands for seasonal affective disorder — <em>affective</em>, meaning it affects the mood. The treatment is a very bright lamp in the morning.", lvl: 2 },
   { w: "pcr", say: "P C R", cat: "science", def: "polymerase chain replication", note: "Fake. PCR stands for polymerase chain reaction — <em>reaction</em>. Each cycle doubles the DNA, so twenty cycles turn a trace into a million copies.", lvl: 2 },
   { w: "sql", say: "S Q L", cat: "computing", def: "standard query language", note: "Fake. SQL stands for Structured Query Language — <em>structured</em>. It began life at IBM as SEQUEL and had to be renamed after a trademark clash.", lvl: 2 },
@@ -221,7 +248,26 @@ const FAKE_ACRONYMS = [
   { w: "conrail", say: "con rail", cat: "transport", def: "Consolidated Railways", note: "Fake. CONRAIL stands for Consolidated Rail Corporation — <em>corporation</em>. It was assembled from six bankrupt railroads in 1976.", lvl: 2 },
   { w: "europol", say: "your oh pol", cat: "policing", def: "European Police Organisation", note: "Fake. EUROPOL is a contraction of European Police, not an acronym — the agency's actual name is the European Union Agency for Law Enforcement Cooperation.", lvl: 2 },
   { w: "milstar", say: "mill star", cat: "military", def: "military strategic and tactical array", note: "Fake. MILSTAR stands for Military Strategic and Tactical Relay — <em>relay</em>. The satellites relay traffic between commanders rather than storing it.", lvl: 2 },
-  /* ---------- level 3: expansions built to be indistinguishable ---------- */
+  /* ---------- level 2: invented acronyms, invented meanings ---------- */
+  { w: "sfd", say: "S F D", cat: "government", def: "site fire drill", note: "Fake. SFD is what a hundred American fire departments call themselves. It is not a kind of drill.", coined: true, lvl: 2 },
+  { w: "tdn", say: "T D N", cat: "aviation", def: "terminal descent notice", note: "Fake. Top of descent is real and is written TOD. There is no TDN.", coined: true, lvl: 2 },
+  { w: "hvpt", say: "H V P T", cat: "science", def: "high voltage proof test", note: "Fake. High-voltage proof testing is real work; engineers call it a hipot test and never this.", coined: true, lvl: 2 },
+  { w: "wrmc", say: "W R M C", cat: "medicine", def: "ward records and medicine chart", note: "Fake. WRMC is real as the Western Regional Medical Command.", coined: true, lvl: 2 },
+  { w: "cslt", say: "C S L T", cat: "telecoms", def: "cellular service line test", note: "Fake. The real cousin is SELT — a single-ended line test, which telephone engineers genuinely run.", coined: true, lvl: 2 },
+  { w: "crest", say: "crest", cat: "aviation", def: "crew rest and standby time", note: "Fake. CREST is real in medicine, as the name of a form of scleroderma, and its letters are the five symptoms.", coined: true, lvl: 2 },
+  { w: "whelk", say: "whelk", cat: "science", def: "wharf and estuary level keeper", note: "Fake. A whelk is a sea snail, and the word has never stood for anything.", coined: true, lvl: 2 },
+  { w: "snarl", say: "snarl", cat: "policing", def: "scene attendance record log", note: "Fake. SNARL is real, but it belongs to South Norwood Animal Rescue and Liberty.", coined: true, lvl: 2 },
+  { w: "clamp", say: "clamp", cat: "transport", def: "cargo lashing and mooring point", note: "Fake. Lashing points on a ship's deck are real fittings. They are numbered, not initialled.", coined: true, lvl: 2 },
+  { w: "braid", say: "braid", cat: "computing", def: "broadband access interconnect directory", note: "Fake. A braid is a real part of a fibre-optic cable — the woven layer under the jacket.", coined: true, lvl: 2 },
+  { w: "grouse", say: "grouse", cat: "military", def: "ground unit sensor", note: "Fake. Invented for this game — British forces do name kit after game birds, which is what makes it work.", coined: true, lvl: 2 },
+  { w: "plover", say: "plover", cat: "marine", def: "pilot vessel radio", note: "Fake. There is a South African pilot vessel called Plover, which is as close as these letters get.", coined: true, lvl: 2 },
+  { w: "sallow", say: "sallow", cat: "science", def: "soil, land level observation watch", note: "Fake. A sallow is a willow, and sallow is also what your face goes after a long winter indoors.", coined: true, lvl: 2 },
+  { w: "hurdle", say: "hurdle", cat: "transport", def: "highway underpass rail depot level evaluation", note: "Fake. A hurdle was a portable fence panel long before it was something to jump over.", coined: true, lvl: 2 },
+  { w: "kestrel", say: "kestrel", cat: "military", def: "key station relay", note: "Fake. Kestrel is a real name on radio equipment — a software-defined radio, a surveillance suite — but never as an acronym.", coined: true, lvl: 2 },
+  { w: "jackdaw", say: "jackdaw", cat: "policing", def: "Joint Area Crime Knowledge Database and Warrants", note: "Fake. Police intelligence databases are real, and their names are drearier than this.", coined: true, lvl: 2 },
+  { w: "grommet", say: "grommet", cat: "engineering", def: "ground mains measurement test", note: "Fake. A grommet is the ring that stops a cable chafing where it passes through a panel.", coined: true, lvl: 2 },
+  { w: "shingle", say: "shingle", cat: "aviation", def: "Shipping Network for the Goods Load Exchange", note: "Fake. Shingle is the coarse gravel on a beach.", coined: true, lvl: 2 },
+  /* ---------- level 3: real acronyms, invented meanings ---------- */
   { w: "cep", say: "C E P", cat: "military", def: "combat effectiveness percentage", note: "Fake. CEP stands for circular error probable — the radius the shell lands inside half the time.", lvl: 3 },
   { w: "dew", say: "dew", cat: "military", def: "detection and early warning", note: "Fake. DEW stands for Distant Early Warning. The DEW Line ran across the Arctic to watch for bombers coming over the pole.", lvl: 3 },
   { w: "rms", say: "R M S", cat: "marine", def: "registered merchant ship", note: "Fake. RMS stands for Royal Mail Ship. The Titanic carried the prefix because she carried the post.", lvl: 3 },
@@ -255,5 +301,23 @@ const FAKE_ACRONYMS = [
   { w: "southcom", say: "south com", cat: "military", def: "Southern Combat Command", note: "Fake. SOUTHCOM stands for United States Southern Command. The geographic command covering Latin America.", lvl: 3 },
   { w: "inmarsat", say: "in mar sat", cat: "telecoms", def: "International Marine Satellite", note: "Fake. INMARSAT stands for International Maritime Satellite Organisation — <em>maritime</em>. It began as a treaty organisation for ships and only later took on aircraft.", lvl: 3 },
   { w: "intelsat", say: "in tel sat", cat: "telecoms", def: "Integrated Telecommunications Satellite", note: "Fake. INTELSAT stands for International Telecommunications Satellite Organisation — <em>international</em>. It was a treaty organisation of member countries before it was a company.", lvl: 3 },
-  { w: "unprofor", say: "you no for", cat: "military", def: "United Nations Provisional Force", note: "Fake. UNPROFOR stands for United Nations Protection Force. The UN deployment in the former Yugoslavia from 1992.", lvl: 3 }
+  { w: "unprofor", say: "you no for", cat: "military", def: "United Nations Provisional Force", note: "Fake. UNPROFOR stands for United Nations Protection Force. The UN deployment in the former Yugoslavia from 1992.", lvl: 3 },
+  /* ---------- level 3: invented acronyms, invented meanings ---------- */
+  { w: "cvn", say: "C V N", cat: "telecoms", def: "cable void notation", note: "Fake. CVN is a real US Navy hull code, for a nuclear-powered aircraft carrier.", coined: true, lvl: 3 },
+  { w: "hzr", say: "H Z R", cat: "government", def: "hazard zone rating", note: "Fake. Hazard zones are real and are numbered — Zone 0, Zone 1, Zone 2 — not rated under initials.", coined: true, lvl: 3 },
+  { w: "tpra", say: "T P R A-", cat: "finance", def: "Transaction Protection, Refund Agreement", note: "Fake. TPRA is real in business, but for third-party risk assessment.", coined: true, lvl: 3 },
+  { w: "rowan", say: "rowan", cat: "science", def: "radar observation, wind and noise", note: "Fake. Wind profilers are real radar instruments, and they go by model numbers.", coined: true, lvl: 3 },
+  { w: "pipit", say: "pipit", cat: "aviation", def: "pilot panel integration test", note: "Fake. The Parnall Pipit was a real naval fighter of 1928, named for the bird rather than for anything it stood for.", coined: true, lvl: 3 },
+  { w: "dowel", say: "dowel", cat: "engineering", def: "drilling overhead works evaluation log", note: "Fake. A dowel is the peg that locks one piece of timber to another.", coined: true, lvl: 3 },
+  { w: "flint", say: "flint", cat: "military", def: "field logistics intelligence note transfer", note: "Fake. FLINT is real in molecular biology, for fluorescence intensity.", coined: true, lvl: 3 },
+  { w: "kipper", say: "kipper", cat: "media", def: "kiosk information, public programme exchange record", note: "Fake. KIPPER is real, and unkind: kids in parents' pockets eroding retirement savings.", coined: true, lvl: 3 },
+  { w: "cinder", say: "cinder", cat: "science", def: "coastal incident, debris entry register", note: "Fake. CINDER is real at DARPA, for cyber insider threat.", coined: true, lvl: 3 },
+  { w: "hobnail", say: "hob nail", cat: "marine", def: "Harbour Obstruction Boom and Net Anchorage Installation Log", note: "Fake. A hobnail is the stud in the sole of a boot.", coined: true, lvl: 3 },
+  { w: "thistle", say: "thistle", cat: "military", def: "Tactical High-band Intercept and Signal Transmission Link Equipment", note: "Fake. Signals intercept kit is real and its names are classified, which is exactly what makes this one plausible.", coined: true, lvl: 3 },
+  { w: "moorhen", say: "moor hen", cat: "science", def: "Moorland Rainfall and Hydrology Experiment Network", note: "Fake. Moorland hydrology stations are real, and they are named for the catchment rather than the bird.", coined: true, lvl: 3 },
+  { w: "pennant", say: "pennant", cat: "marine", def: "Port Entry Navigation Notice, Annual Tides", note: "Fake. A pennant is a tapering flag, and in the Royal Navy a ship's number. Not this.", coined: true, lvl: 3 },
+  { w: "quarrel", say: "quarrel", cat: "government", def: "quarterly audit record, regulation and enforcement log", note: "Fake. A quarrel is an argument, and also the short bolt fired from a crossbow.", coined: true, lvl: 3 },
+  { w: "trawler", say: "trawler", cat: "science", def: "transit wave level estimation record", note: "Fake. Wave-level records are real oceanography. A trawler is a fishing boat.", coined: true, lvl: 3 },
+  { w: "barnacle", say: "barnacle", cat: "transport", def: "Barge Navigation, Anchorage and Cargo Loading Entries", note: "Fake. Berth registers are real, and are kept by the harbourmaster under no name at all.", coined: true, lvl: 3 },
+  { w: "windlass", say: "windless", cat: "marine", def: "waterway inspection, navigation data, lock and sluice survey", note: "Fake. A windlass raises an anchor, and on the canals it is the handle that works a lock.", coined: true, lvl: 3 }
 ];

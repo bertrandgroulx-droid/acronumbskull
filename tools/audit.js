@@ -1,20 +1,23 @@
 #!/usr/bin/env node
 /* Fairness audit for the acronym bank.
  *
- * Every acronym in the bank is genuine. What the player judges is the expansion
- * printed under it: half of them are what the acronym really stands for, half
- * were invented. So the game is only honest if the two halves are
- * indistinguishable except by knowing the answer. The leaks are these:
+ * A card is an acronym and what it supposedly stands for, and it can be fake in
+ * two ways: a genuine acronym under an invented meaning (borrowed), or an
+ * acronym nobody ever issued (coined, and marked `coined: true`). The game is
+ * only honest if none of that is visible before the answer. The leaks are these:
  *
- *   - familiarity: if the fakes are hung on obscure acronyms and the reals on
- *                  household ones, the acronym alone decides it. Measured
- *                  against the reference list with --ref
- *   - length:      the same leak seen from the other side — a bank of
- *                  three-letter reals and six-letter fakes gives itself away
+ *   - familiarity: if the borrowed fakes are hung on obscure acronyms and the
+ *                  reals on household ones, the acronym alone decides it.
+ *                  Measured against the reference list with --ref, over the
+ *                  borrowed fakes only — a coined one is meant to be absent
+ *   - length:      a bank of three-letter reals and six-letter fakes gives
+ *                  itself away without a word being read
  *   - fit:         real expansions cheat. They skip "and", "of", "the", and take
  *                  two letters out of one word (RADAR, MODEM, COMECON). An
  *                  invented one that lines up one-letter-per-word is a tell, so
  *                  the invented ones have to cheat at the same rate
+ *   - shape:       inventing an acronym pulls towards word-shaped strings and
+ *                  vowel-less clusters at once; both have to match the real half
  *   - style:       expansion length, commas, capitalised names, trailing gloss.
  *                  Inventing pulls towards tidy capitalised organisation names
  *   - subject:     if every medical entry is real, the field name gives it away
@@ -161,35 +164,42 @@ if (refPath && fs.existsSync(refPath)) {
     if (key) ref.set(key, (ref.get(key) || []).concat(line.slice(at + 3).trim()));
   });
   console.log('\nREFERENCE SCREEN');
-  /* Two different questions, and both matter now that every acronym is genuine.
+  /* Three different questions, because a fake can be fake in two ways.
    *
-   * First: does the invented expansion collide with a meaning the acronym really
-   * has? Then it is not a fake at all, and a player who knows it is punished for
-   * being right. These are errors.
+   * A *borrowed* fake is a genuine acronym under an invented meaning. For those:
+   * does the invented meaning collide with a meaning the acronym really has? Then
+   * it is not a fake at all, and a player who knows it is punished for being
+   * right. And are those acronyms as familiar as the real half's? If the borrowed
+   * ones came from obscure corners, the acronym alone answers the card.
    *
-   * Second: is the acronym itself as familiar on one side as on the other? If the
-   * fakes were picked from obscure corners and the reals from everyday life, the
-   * acronym alone gives the game away before the expansion is read. The reference
-   * list is a rough familiarity proxy: being in it means somebody wrote it down.
+   * A *coined* fake is an acronym that does not exist. For those the old question
+   * applies: does the string already stand for something well known? Then it is
+   * not coined, it is borrowed by accident, and the note is wrong.
    */
+  const borrowed = bank.fake.filter(x => !x.coined);
+  const coined = bank.fake.filter(x => x.coined);
   const norm = t => t.toLowerCase().replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim();
   const stop = new Set(['the', 'of', 'for', 'and', 'a', 'an', 'in', 'on', 'to', 'united', 'states', 'national', 'international', 'system', 'service']);
   const keyed = t => norm(t).split(' ').filter(w => w && !stop.has(w));
   const collides = (mine, theirs) => {
     const a = keyed(mine), b = keyed(theirs);
     if (!a.length || !b.length) return false;
-    const shared = a.filter(w => b.includes(w)).length;
-    return shared / Math.max(a.length, b.length) > 0.8;
+    return a.filter(w => b.includes(w)).length / Math.max(a.length, b.length) > 0.8;
   };
-  const clashes = bank.fake.filter(x => (ref.get(x.w) || []).some(t => collides(x.def, t)));
+  const clashes = borrowed.filter(x => (ref.get(x.w) || []).some(t => collides(x.def, t)));
   if (clashes.length) {
-    flag('fake expansions that are already a real meaning of the acronym:');
+    flag('invented meanings that are already a real meaning of the acronym:');
     clashes.forEach(x => console.log(`    ${x.w.toUpperCase()} — ours: ${x.def} | theirs: ${ref.get(x.w).join(' / ')}`));
-  } else console.log(`  no fake expansion matches a meaning the reference list already knows`);
+  } else console.log(`  none of the ${borrowed.length} invented meanings match a meaning the list knows`);
+  const taken = coined.filter(x => ref.has(x.w));
+  if (taken.length) {
+    flag('coined acronyms the reference list already knows (check the meanings):');
+    taken.forEach(x => console.log(`    ${x.w.toUpperCase()} — ours: ${x.def} | theirs: ${ref.get(x.w).join(' / ')}`));
+  } else console.log(`  none of the ${coined.length} coined acronyms appear in the list`);
   const known = arr => pct(arr.filter(x => ref.has(x.w)).length / arr.length);
-  const kr = known(bank.real), kk = known(bank.fake), kgap = Math.abs(kr - kk);
-  console.log(`  acronym is in the reference list   ${String(kr).padStart(4)} ${String(kk).padStart(5)} ${String(kgap).padStart(5)}${kgap > 15 ? '  **' : ''}`);
-  if (kgap > 15) { problems++; console.log('    ** one side is drawn from more obscure acronyms than the other'); }
+  const kr = known(bank.real), kb = known(borrowed), kgap = Math.abs(kr - kb);
+  console.log(`  borrowed acronym is in the list    ${String(kr).padStart(4)} ${String(kb).padStart(5)} ${String(kgap).padStart(5)}${kgap > 15 ? '  **' : ''}`);
+  if (kgap > 15) { problems++; console.log('    ** the borrowed acronyms are more obscure than the real ones, so the acronym answers the card'); }
 }
 
 /* ---------- shape ---------- */
