@@ -101,9 +101,8 @@ Existing clips are left alone, so adding entries only renders the new ones.
 ## Adding acronyms
 
 All the content is in `acronyms.js` — two arrays, `REAL_ACRONYMS` and
-`FAKE_ACRONYMS`, 73 entries each. Each level holds about fifty, which is five games
-before one comes round again; the obvious next job on this repo is to widen all three.
-Each entry looks like this:
+`FAKE_ACRONYMS`, 109 entries each. Each level holds between 68 and 76 of them, which
+is about seven games before one comes round again. Each entry looks like this:
 
 ```js
 {
@@ -143,7 +142,7 @@ taken.
 `tools/screen.js` prints everything the reference list already knows a candidate
 stands for. Anything it does not know still needs a web check, because the list holds
 a few thousand acronyms and not all of them. Screening the candidate pool for this
-bank rejected about four in ten:
+bank rejected about four in ten — around eighty candidates went in the bin:
 
 | candidate | intended | what it actually is |
 |---|---|---|
@@ -155,6 +154,13 @@ bank rejected about four in ten:
 | PLOD | police logistics and operations desk | Police Link Officers for Deaf people |
 | LUPIN | land use planning index | Land Use Planning Information Network |
 | MEDCERT | medical certification register | a European medical-device notified body |
+| STOAT | short tactical observation and target | Spatiotemporal Observation Annotation Tool |
+| MARLIN | marine radio link and instrument node | a NATO radio networking standard, STANAG 4691 |
+| BRISK | broadcast interval signal keeper | Fox Sports' Broadcast Remote IP Studio Kit |
+| NSDB | national soil data bank | the Canadian National Soil Database |
+| REDCAP | rail emergency duty and casualty assistance point | Research Electronic Data Capture |
+| QMT | quiet muscle test | quantitative muscle testing |
+| STRUT | structural test and utilisation table | a unit-test generation method |
 
 Two of the birds went the other way and turned out to be genuine: PELICAN and PUFFIN
 crossings really are acronyms, so they moved into `REAL_ACRONYMS`.
@@ -163,6 +169,12 @@ An acronym that means something *else* is fine, and in fact keeps the game fair 
 player who knows that PND means paroxysmal nocturnal dyspnoea will correctly reject
 "patient node diagnosis". What is not fine is an invention whose expansion is already
 that acronym's real meaning.
+
+Cheap fakes are cheap for a reason. A generic technical noun phrase — "vehicle speed
+profile", "data reference frame", "power quality rating" — is almost always already
+somebody's acronym. The candidates that survived were the specific and slightly odd
+ones: "hyperlink block index", "cable void notation", "harbour obstruction boom and
+net anchorage installation log". Colourful beats plausible, and it screens better too.
 
 ### The expansions have to cheat at the same rate
 
@@ -185,11 +197,22 @@ acronyms the ones that leaked were:
 
 - **Length.** Household real acronyms are three letters; inventing pulls you towards
   five- and six-letter pronounceable strings. Fixed by matching the length
-  distribution exactly within each level — level 1 is eleven three-letter entries a
-  side, level 3 is nine seven-letter entries a side.
+  distribution exactly within each level — level 1 is nineteen three-letter entries a
+  side, level 3 is eleven seven-letter entries a side.
 - **Word shape.** 73% of the inventions spelled an English word against 55% of the
   real ones, because inventing an acronym pulls you towards making it a word. Five
   word-shaped inventions were retired in favour of letter-shaped ones.
+- **Vowels.** The invented three-letter entries came out as consonant clusters — KFL,
+  ZBN, PZL — 28% of the bank against the real half's 9%, because a made-up initialism
+  has no word behind it to supply an A or an I. Eight household real entries were
+  swapped for equally household vowel-less ones (PDF for URL, LCD for CAD, HGV for
+  GPS) until the two sides met.
+- **Endings.** `-le` was 0 real against 9 invented, which is precisely the tell the
+  parent project had with `-ling`. Three genuine `-le` acronyms went in — ORACLE, the
+  ITV teletext service; SIMPLE, an IETF messaging standard; SAMPLE, the six questions
+  an ambulance crew asks — and three ordinary entries came out. `-ac` had the opposite
+  problem, 8 real against 1 invented, and three of the obscurer real ones (COSSAC,
+  ILLIAC, CINCPAC) were retired with their length-matched partners.
 - **"and".** The first draft used "and" in 68% of invented expansions against 23% of
   real ones — a 45-point tell in a single conjunction.
 - **Capitalisation.** Real expansions carry proper nouns (National, United Nations,
@@ -197,17 +220,17 @@ acronyms the ones that leaked were:
 - **Expansion length.** Real expansions are shorter than they look, because of the
   cheating above. Matched now within half a word at every level.
 - **Field.** The field is printed on the card, so a field that is 90% real is a free
-  answer. Marine started at 82% invented and government at 20%; both are inside
-  fifteen points of the base rate now.
+  answer. Marine started at 82% invented, government at 20% and media at 17%; all
+  three are inside the tolerance now.
 
 Every one of these was introduced by habit rather than decision, and every one was
 found by the audit rather than by thinking. Run it after each batch.
 
 ### Keep the fields balanced
 
-No single subject should dominate. Military is the largest at 16% of the bank, then
-science and computing at around 11%. When a field starts to feel repetitive in play,
-trim it and widen the rest rather than adding more of the same.
+No single subject should dominate. Military and government are the largest at around
+12% of the bank each, then computing and science. When a field starts to feel
+repetitive in play, trim it and widen the rest rather than adding more of the same.
 
 ## Built from a recipe
 
@@ -219,7 +242,7 @@ is new is the content, the acronym-specific audits above, and the screening step
 
 ## Ideas for later
 
-- Widen the bank — fifty per level is five games, and it wants to be twenty.
+- Widen the bank further — seventy per level is seven games, and it wants to be twenty.
 - Daily challenge: the same ten for everyone, seeded by the date.
 - A mode where the acronym is real but the expansion may not be.
 - Streaks, and a stats screen behind the personal best.
