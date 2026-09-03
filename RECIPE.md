@@ -130,19 +130,18 @@ Match **within each difficulty level**, not just overall; the aggregate can look
 while one level leaks badly.
 
 **4. Match how the answer is built, not just how it reads — and then show your
-working.** Answering a card lights up the letters that make the acronym, which is most
-of the payoff: SNOBOL is StriNg Oriented symBOlic Language. The game works it out with
-the same matcher the audit uses, and five entries carry a `spell` field for the cases
-where the cheapest reading is not the true one.
+working.** Real acronyms cheat: RADAR skips the "and", MODEM takes three letters out
+of "modulator", GESTAPO takes two from each of *Geheime Staatspolizei*, AWOL fishes
+the O out of the middle of "withOut". An invented bank where every letter is neatly
+the first letter of its own word is a bank you can win without reading anything — the
+first draft came out at 100% clean fits against the real half's 49%. `tools/audit.js`
+measures how the letters are taken on each side. Whatever your subject, find its
+equivalent: the structural tic that real examples have and tidy inventions don't.
 
-**4. Match how the answer is built, not just how it reads.** Real acronyms cheat:
-RADAR skips the "and", MODEM takes three letters out of "modulator", GESTAPO takes two
-from each of *Geheime Staatspolizei*, AWOL fishes the O out of the middle of "withOut".
-An invented bank where every letter is neatly the first letter of its own word is a
-bank you can win without reading anything — the first draft came out at 100% clean
-fits against the real half's 49%. `tools/audit.js` measures how the letters are taken
-on each side. Whatever your subject, find its equivalent: the structural tic that real
-examples have and tidy inventions don't.
+Then show it: answering a card lights up the letters that make the acronym, which is
+most of the payoff of a round. The game reads them with the same matcher the audit
+uses, and five entries carry a `spell` field for the cases where the cheapest reading
+is not the true one.
 
 **5. Anything visible without engaging with the meaning counts.** Every one of these
 leaked here, and every one was found by the audit rather than by thinking:

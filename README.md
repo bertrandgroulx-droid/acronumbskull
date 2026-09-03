@@ -66,6 +66,31 @@ source is doing the work. Note that the workflow cannot enable Pages for you: it
 GitHub to create the site (`enablement: true`) and an automated token is not permitted
 to, so the source has to be set by hand first either way.
 
+## The icon
+
+`icon/` holds the mark: a stylised A in the same family as
+[Fauxcabulary](https://github.com/bertrandgroulx-droid/fauxcabulary)'s F — a bright
+azure glyph on a near-black ground, built from flat-cut blocks, with one arm of the
+letter broken into two loose squares. The F carries its middle arm that way; this A
+does it with the crossbar.
+
+```sh
+python3 icon/make.py     # the svgs — geometry is computed, not eyeballed
+node icon/render.mjs     # the png set, rasterised in Chromium
+node icon/preview.mjs    # a contact sheet: home screens, and 180px down to 20px
+```
+
+The A's counter is a triangle that widens towards the feet, so `make.py` measures the
+space available at the crossbar's own height and sizes the two squares to fit it with
+even clearance. Below about 24px they merge into a single bar, which is the right
+thing to happen — the letter still reads.
+
+`icon.svg` is the squircle, for the browser tab and anywhere the file is shown as it
+is. iOS and Android apply their own mask, so they get a plain full-bleed square
+(`apple-touch-icon.png`, and `icon-maskable-512.png` inside Android's safe zone);
+rounding those ourselves would show as a dark halo inside their mask.
+`icon-round-512.png` is the disc, which is what Fauxcabulary shows on Android.
+
 ## Tests and audits
 
 ```sh
