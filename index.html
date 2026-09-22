@@ -4,6 +4,21 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Acronumbskull</title>
+<link rel="canonical" href="https://shozbot.com/acronumbskull/">
+<script>
+  /* This app lives at shozbot.com/acronumbskull/ now. Anyone still arriving at the old
+     GitHub Pages address is moved across, so that scores, streaks and settings
+     — which a browser files under whichever address they were made on — pile up
+     in one place instead of quietly splitting in two.
+
+     The hostname test is load-bearing, not defensive. shozbot.com serves this
+     very file through a rewrite, so without the test the redirect would fire
+     there too and bounce the browser against the same address for ever. */
+  (function () {
+    if (location.hostname !== "bertrandgroulx-droid.github.io") return;
+    location.replace("https://shozbot.com/acronumbskull/" + location.search + location.hash);
+  })();
+</script>
 <meta name="description" content="Ten acronyms and what they supposedly stand for. Some are genuine. The rest were made up — sometimes the meaning, sometimes the acronym as well. Can you tell which is which?" />
 <meta name="color-scheme" content="light dark" />
 <meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)" />
