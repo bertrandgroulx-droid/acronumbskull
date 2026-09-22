@@ -918,6 +918,11 @@
 
 <!-- The shozbot studio kit: the "back to shozbot" bar at the top, and visitor
      counting. One line, so both are changed in one place rather than seven. -->
-<script src="https://shozbot.com/kit/kit.js" data-app="Acronumbskull" defer></script>
+<!-- The studio kit. data-by puts the words "by shozbot" just after the
+     element named here — under the tagline; the masthead is already centred, so the credit is too.
+     A credit rather than a navigation bar; it also counts the visit.
+     See shozbot.com/kit/kit.js. -->
+<script src="https://shozbot.com/kit/kit.js"
+        data-by="header .tagline" data-by-block defer></script>
 </body>
 </html>
