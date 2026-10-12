@@ -23,23 +23,35 @@ invented for a quiz.
 
 ## Features
 
-- 10 acronyms per game with a random real/fake split, freshly shuffled.
+- A daily deck: the same ten for everyone, numbered by the day of the year and drawn
+  from all three levels. The page opens straight into it. Your first score on a day is
+  the one that is kept, playing every day builds a streak, and the previous 100 days
+  are listed under Past puzzles. `?daily=2026-10-12`, `?past` and `?practice` link to
+  each place.
+- Random puzzles, unlimited: 10 acronyms per game with a random real/fake split,
+  freshly shuffled, at the level you choose.
 - Three difficulty levels — Easy, Tricky and Fiendish — each with its own acronyms and
   its own fakes. Your choice is remembered.
 - Instant reveal after each answer — **Correct** or **Wrong**, the card's status, and a
   note with the history, or with what those letters really stand for.
 - Back and Forward buttons to step through the ones you have already answered.
-- Score out of 10 with a rank and a copyable emoji result grid.
+- Score out of 10 with a rank and a shareable emoji result line, in the same shape as
+  every other Shozbot daily game.
 - A per-card recap where any row can be tapped open for the expansion, the note, the
   example sentence and the answer you gave.
-- Play again returns to the options, so the difficulty can be changed between games.
-- Personal best saved per difficulty, and labelled with the level it was set at.
+- More random puzzles returns to the options, so the difficulty can be changed between
+  games.
+- Personal best saved per difficulty (random puzzles only), and labelled with the level
+  it was set at.
 - Every real acronym comes with an example sentence, shown whether you got it right
   or not.
 - Keyboard play: `←` real, `→` fake; once answered, the arrows move through your
   answers and `Enter` goes on.
 - Light and dark themes, following whatever your phone is set to.
-- No build step, no dependencies, no tracking. One HTML file and one data file.
+- No build step, no dependencies, no tracking. One HTML file, one data file, and
+  `shozbot-daily.js` — the studio's shared daily-puzzle logic, a copy of
+  `kit/daily.js` in the shozbot repo. Do not edit the copy; change the canonical one
+  and copy it back.
 
 ## Run it locally
 
@@ -94,7 +106,7 @@ rounding those ourselves would show as a dark halo inside their mask.
 ## Tests and audits
 
 ```sh
-node tests/run-all.js                # seven suites, driving the real game logic
+node tests/run-all.js                # nine suites, driving the real game logic
 node tools/audit.js --dict dict.txt --ref acronyms-ref.csv    # fairness audit
 node tools/screen.js --ref acronyms-ref.csv ZMP PLOD KESTREL  # screen candidates
 ```
@@ -108,7 +120,15 @@ curl -sL -o acronyms-ref.csv https://raw.githubusercontent.com/krishnakt031990/C
 ```
 
 Run the suites after touching `index.html`, and the audit after touching
-`acronyms.js`.
+`acronyms.js`. The suites boot the page through `tests/lib/harness.js`, which picks
+the game's script out of `index.html` (the last inline one — the first is the
+github.io redirect), loads `shozbot-daily.js` beside it, and stubs the DOM, storage,
+`location` and `history`.
+
+Saved data lives under the `acronumbskull:` prefix, because every Shozbot app shares
+the shozbot.com origin: `acronumbskull:bests`, `:level`, `:seen`, `:help-seen`, and
+one `acronumbskull:daily:<date>` record per day played. The old unprefixed keys are
+moved across on first load.
 
 ## Adding acronyms
 
@@ -334,6 +354,5 @@ is new is the content, the acronym-specific audits above, and the screening step
 ## Ideas for later
 
 - Widen the bank further — seventy per level is seven games, and it wants to be twenty.
-- Daily challenge: the same ten for everyone, seeded by the date.
 - A mode where the acronym is real but the expansion may not be.
-- Streaks, and a stats screen behind the personal best.
+- A stats screen behind the personal best.
