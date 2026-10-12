@@ -1,30 +1,10 @@
 // Exercise the back/forward review flow against the page's real logic.
-const fs = require('fs');
-const path = require('path');
-const ROOT = path.join(__dirname, '..') + '/';
-const words  = fs.readFileSync('' + ROOT + 'acronyms.js', 'utf8');
-const html   = fs.readFileSync('' + ROOT + 'index.html', 'utf8');
-const script = html.match(/<script>\n([\s\S]*?)<\/script>/)[1];
+const { boot, bank, ok, hidden: isHidden } = require('./lib/harness');
+const { els, store } = boot();
+const hidden = id => isHidden(els, id);
+const localStorage = { getItem: k => (k in store ? store[k] : null) };
 
-function makeEl(id){
-  const set = new Set();
-  return { id, textContent:'', innerHTML:'', disabled:false, className:'',
-    classList:{ add:c=>set.add(c), remove:c=>set.delete(c), contains:c=>set.has(c),
-                toggle:(c,on)=>{ on?set.add(c):set.delete(c); } },
-    attrs:{}, setAttribute(k,v){this.attrs[k]=v;}, getAttribute(k){return this.attrs[k];},
-    handlers:{}, addEventListener(ev,fn){ this.handlers[ev]=fn; }, focus(){} };
-}
-const els = {};
-const document = { getElementById: id => (els[id] = els[id] || makeEl(id)), addEventListener: () => {} };
-const store = {};
-const localStorage = { getItem:k=>k in store?store[k]:null, setItem:(k,v)=>{store[k]=v;} };
-const window = { scrollTo(){}, prompt(){} };
-new Function('document','localStorage','window','navigator', words + '\n' + script)(document, localStorage, window, {});
-
-const bank = new Function(words + '; return {r:REAL_ACRONYMS,k:FAKE_ACRONYMS};')();
 const REAL = new Set(bank.r.map(x => x.w));
-const ok = (cond, msg) => { if (!cond) throw new Error('FAIL: ' + msg); };
-const hidden = id => els[id].classList.contains('hidden');
 
 els['btn-start'].handlers.click();
 

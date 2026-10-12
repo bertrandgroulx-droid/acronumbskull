@@ -2,25 +2,12 @@
 // SNOBOL is StriNg Oriented symBOlic Language. This drives the real game and checks
 // what comes back — the marked letters must be the acronym, in order, and the words
 // underneath must survive untouched.
-const fs = require('fs');
-const path = require('path');
-const ROOT = path.join(__dirname, '..') + '/';
-const words  = fs.readFileSync('' + ROOT + 'acronyms.js', 'utf8');
-const html   = fs.readFileSync('' + ROOT + 'index.html', 'utf8');
-const script = html.match(/<script>\n([\s\S]*?)<\/script>/)[1];
+const { boot, bank, ok, hidden: isHidden } = require('./lib/harness');
+const { els, store } = boot();
+const hidden = id => isHidden(els, id);
+const localStorage = { getItem: k => (k in store ? store[k] : null) };
 
-function makeEl(id){ const set=new Set(); return { id, textContent:'', innerHTML:'', disabled:false, className:'', hidden:false,
-  classList:{add:c=>set.add(c),remove:c=>set.delete(c),contains:c=>set.has(c),toggle:(c,on)=>{on?set.add(c):set.delete(c);}},
-  attrs:{}, setAttribute(k,v){this.attrs[k]=v;}, getAttribute(k){return this.attrs[k];},
-  handlers:{}, addEventListener(e,f){this.handlers[e]=f;}, focus(){} }; }
-const els={}; const document={getElementById:id=>(els[id]=els[id]||makeEl(id)),addEventListener:()=>{}};
-const store={}; const localStorage={getItem:k=>k in store?store[k]:null,setItem:(k,v)=>{store[k]=v;}};
-new Function('document','localStorage','window','navigator',words+'\n'+script)
-  (document, localStorage, {scrollTo(){},prompt(){}}, {});
-
-const bank = new Function(words + '; return {r:REAL_ACRONYMS,k:FAKE_ACRONYMS};')();
 const byWord = new Map([...bank.r, ...bank.k].map(x => [x.w, x]));
-const ok = (c, m) => { if (!c) throw new Error('FAIL: ' + m); };
 
 const strip = h => h.replace(/<\/?b>/g, '');
 const marked = h => (h.match(/<b>([^<]*)<\/b>/g) || [])
