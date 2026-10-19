@@ -37,6 +37,11 @@ invented for a quiz.
 - Back and Forward buttons to step through the ones you have already answered.
 - Score out of 10 with a rank and a shareable emoji result line, in the same shape as
   every other Shozbot daily game.
+- A share icon beside How to play, the same one every Shozbot app carries: a link to
+  the day's deck (`?daily=YYYY-MM-DD`, so it opens the same ten tomorrow) whenever a
+  specific day is on screen, the plain address on random puzzles and the Past list.
+  Always the shozbot.com address, from the page's canonical link. A phone opens its
+  share sheet; a laptop copies the link and says so.
 - A per-card recap where any row can be tapped open for the expansion, the note, the
   example sentence and the answer you gave.
 - More random puzzles returns to the options, so the difficulty can be changed between
@@ -106,7 +111,7 @@ rounding those ourselves would show as a dark halo inside their mask.
 ## Tests and audits
 
 ```sh
-node tests/run-all.js                # nine suites, driving the real game logic
+node tests/run-all.js                # ten suites, driving the real game logic
 node tools/audit.js --dict dict.txt --ref acronyms-ref.csv    # fairness audit
 node tools/screen.js --ref acronyms-ref.csv ZMP PLOD KESTREL  # screen candidates
 ```

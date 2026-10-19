@@ -7,6 +7,9 @@
 //
 //   const { boot } = require('./lib/harness');
 //   const { els, store, location } = boot({ store: {}, search: '?daily=2026-03-04' });
+//
+// `navigator` is whatever the test passes (nothing, by default): a share sheet,
+// a clipboard, or neither, to drive the share icon down each of its three paths.
 const fs = require('fs');
 const path = require('path');
 const ROOT = path.join(__dirname, '..', '..') + '/';
@@ -15,6 +18,7 @@ const html  = fs.readFileSync(ROOT + 'index.html', 'utf8');
 const inline = [...html.matchAll(/<script>\n([\s\S]*?)<\/script>/g)].map(m => m[1]);
 const script = inline[inline.length - 1];
 const ShozDaily = require(ROOT + 'shozbot-daily.js');
+const canonical = /<link rel="canonical" href="([^"]+)">/.exec(html)[1];
 
 function makeEl(id) {
   const set = new Set();
@@ -36,7 +40,9 @@ function boot(opts) {
   const docHandlers = {};
   const document = {
     getElementById: id => (els[id] = els[id] || makeEl(id)),
-    addEventListener: (e, f) => { docHandlers[e] = f; }
+    addEventListener: (e, f) => { docHandlers[e] = f; },
+    // The share icon builds its link from the page's canonical address.
+    querySelector: sel => (sel === 'link[rel="canonical"]' ? { href: canonical } : null)
   };
   const localStorage = {
     getItem: k => (k in store ? store[k] : null),

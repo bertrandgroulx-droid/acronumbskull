@@ -378,7 +378,7 @@
     text-align: center;
   }
   .daily b { color: var(--ink); font-weight: 700; }
-  .daily-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 14px; }
+  .daily-links { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0 14px; }
   .daily-links a {
     color: var(--accent); font-weight: 600; text-decoration: none;
     /* the words are small for a thumb; the hit area is not */
@@ -386,6 +386,35 @@
   }
   .daily-links a:hover { text-decoration: underline; }
   .daily-links a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  /* The share icon and How to play travel together: if the links row has to
+     wrap, the icon stays beside the words it sits to the left of. */
+  .help-pair { display: inline-flex; align-items: center; gap: 6px; }
+
+  /* ---------- share a link ----------
+     The same round upload-arrow button every Shozbot app carries. 34px of hit
+     area around an 18px glyph; the negative vertical margins keep the daily
+     line the height of its text, so the play area does not move. */
+  .share-btn {
+    flex: none;
+    width: 34px; height: 34px; min-height: 0;
+    margin: -7px 0;
+    padding: 0; border: 0; border-radius: 50%;
+    background: none; color: var(--muted);
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .share-btn svg { width: 18px; height: 18px; }
+  .share-btn:hover, .share-btn:focus-visible { color: var(--ink); border-color: transparent; }
+  .share-toast {
+    position: fixed; left: 50%; bottom: calc(28px + env(safe-area-inset-bottom));
+    transform: translateX(-50%); z-index: 50;
+    max-width: calc(100% - 32px);
+    background: var(--ink); color: var(--ground);
+    border-radius: 999px; padding: 8px 16px;
+    font-size: 0.85rem; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    pointer-events: none;
+  }
 
   /* ---------- daily results ---------- */
   .streak {
@@ -460,9 +489,18 @@
       <a href="./" id="go-today" class="hidden">Today&rsquo;s puzzle</a>
       <a href="?past" id="go-past">Past puzzles</a>
       <a href="?practice" id="go-random">Random puzzles</a>
-      <a href="#how-to-play" id="go-help">How to play</a>
+      <span class="help-pair">
+        <button class="share-btn" id="share-link" type="button" aria-label="Share a link to this puzzle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3v12M8 7l4-4 4 4"/><path d="M6 11H5v9h14v-9h-1"/>
+          </svg>
+        </button>
+        <a href="#how-to-play" id="go-help">How to play</a>
+      </span>
     </nav>
   </div>
+  <div class="share-toast hidden" id="share-toast" role="status" aria-live="polite"></div>
 
   <!-- ===== RANDOM PUZZLES: pick a level ===== -->
   <section id="start" class="card hidden">
@@ -827,11 +865,46 @@
     ["today", "past", "random"].forEach(function (k) {
       el("go-" + k).classList.toggle("hidden", places.indexOf(k) === -1);
     });
+    el("share-link").setAttribute("aria-label", isDaily(current) ? "Share a link to this puzzle" : "Share a link to Acronumbskull");
   }
   function lineFor(meta) {
     return isDaily(meta)
       ? "<b>Daily No. " + meta.number + "</b> · " + escapeHTML(daily.fmtShort(meta.date))
       : "<b>Random puzzles</b>";
+  }
+
+  /* ---------- a link to this puzzle ---------- */
+  // The share icon in the daily line. A specific day's deck — in play or on its
+  // results — is linked by date, so the link opens the same deck tomorrow; random
+  // puzzles and the Past list share the plain address. Always the shozbot.com
+  // address, read from the canonical link rather than location.href: this file
+  // is also served from the old github.io address, and saved scores live per
+  // address, so a link must never send anyone there.
+  var HOME = (function () {
+    var link = document.querySelector ? document.querySelector('link[rel="canonical"]') : null;
+    return (link && link.href) || "https://shozbot.com/acronumbskull/";
+  })();
+  function shareLink() {
+    return isDaily(current)
+      ? { url: HOME + "?daily=" + current.iso, title: "Acronumbskull · Daily No. " + current.number }
+      : { url: HOME, title: "Acronumbskull" };
+  }
+  var toastTimer = null;
+  function toast(message) {
+    var t = el("share-toast");
+    t.textContent = message;
+    t.classList.remove("hidden");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.add("hidden"); }, 1800);
+  }
+  // A phone opens its share sheet; a laptop copies the link and says so; where
+  // neither is available the link itself is shown, to be copied by hand.
+  function shareThis() {
+    var s = shareLink();
+    if (navigator.share) { navigator.share({ title: s.title, url: s.url }).catch(function () {}); return; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(s.url).then(function () { toast("Link copied"); }, function () { toast(s.url); });
+    } else toast(s.url);
   }
 
   function setLevel(n) {
@@ -1174,6 +1247,7 @@
   el("go-past").addEventListener("click", function (e) { e.preventDefault(); showPast(); });
   el("go-random").addEventListener("click", function (e) { e.preventDefault(); showRandom(); });
   el("go-help").addEventListener("click", function (e) { e.preventDefault(); showHelp(); });
+  el("share-link").addEventListener("click", shareThis);
   el("btn-help-close").addEventListener("click", closeHelp);
   el("help").addEventListener("close", function () { write(KEY_HELP, true); });
   el("past-list").addEventListener("click", function (e) {
